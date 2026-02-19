@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum WalletStatus {
+  ACTIVE
+  FROZEN
+  SUSPENDED
+}
+
+enum TransactionType {
+  DEPOSIT       // Funding the wallet
+  PURCHASE      // Buying data/airtime
+  REFUND        // Reversal of purchase
+  ADJUSTMENT    // Admin correction
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
+enum ServiceCategory {
+  DATA
+  AIRTIME
+  CABLE_TV
+  ELECTRICITY
+  OTHER
+}
+
+enum NotificationType {
+  TRANSACTION_SUCCESS
+  TRANSACTION_FAILED
+  BUDGET_WARNING
+  BUDGET_EXCEEDED
+  SYSTEM_ALERT
+}
+
+// ─── Models ─────────────────────────────────────────────────────────────────
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  passwordHash    String    @map("password_hash")
+  firstName       String?   @map("first_name")
+  lastName        String?   @map("last_name")
+  phoneNumber     String?   @unique @map("phone_number")
+  role            UserRole  @default(USER)
+  isEmailVerified Boolean   @default(false) @map("is_email_verified")
+  isActive        Boolean   @default(true) @map("is_active")
+  lastLoginAt     DateTime? @map("last_login_at")
+  
+  // Relations
+  wallet        Wallet?
+  transactions  Transaction[]
+  budgets       Budget[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+  @@index([email])
+  @@index([phoneNumber])
+}
+
+model Wallet {
+  id          String       @id @default(uuid())
+  userId      String       @unique @map("user_id")
+  balance     Decimal      @default(0.00) @db.Decimal(12, 2)
+  currency    String       @default("NGN")
+  status      WalletStatus @default(ACTIVE)
+  
+  // Optimistic Locking
+  version     Int          @default(0)
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("wallets")
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  reference       String            @unique // Internal unique ref
+  externalRef     String?           @map("external_ref") // Provider ref
+  userId          String            @map("user_id")
+  walletId        String            @map("wallet_id")
+  amount          Decimal           @db.Decimal(12, 2)
+  fee             Decimal           @default(0.00) @db.Decimal(10, 2)
+  totalAmount     Decimal           @map("total_amount") @db.Decimal(12, 2) // amount + fee
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  category        ServiceCategory?
+  description     String?
+  metadata        Json?             // Flexible JSON for provider details
+  
+  // Snapshot of balance after transaction (for auditing)
+  balanceSnapshot Decimal?          @map("balance_snapshot") @db.Decimal(12, 2)
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id])
+  wallet Wallet @relation(fields: [walletId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("transactions")
+  @@index([userId])
+  @@index([walletId])
+  @@index([reference])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Budget {
+  id          String          @id @default(uuid())
+  userId      String          @map("user_id")
+  category    ServiceCategory
+  amountLimit Decimal         @map("amount_limit") @db.Decimal(12, 2)
+  month       Int             // 1-12
+  year        Int             // e.g. 2024
+  
+  // Alert thresholds configuration (e.g., notify at 80%)
+  alertThresholdPercent Int @default(80) @map("alert_threshold_percent")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, category, month, year]) // One budget per category per month
+  @@map("budgets")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false) @map("is_read")
+  metadata  Json?            // Link to transaction ID, etc.
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("notifications")
+  @@index([userId])
+  @@index([isRead])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id") // Nullable for system actions
+  action    String
+  resource  String
+  resourceId String? @map("resource_id")
+  details   Json?
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}
