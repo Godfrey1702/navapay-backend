@@ -9,6 +9,7 @@ import { walletsRoutes } from './modules/wallets/index.js';
 import { transactionsRoutes } from './modules/transactions/index.js';
 import { budgetsRoutes } from './modules/budgets/index.js';
 import { notificationsRoutes } from './modules/notifications/index.js';
+import scheduledRoutes from './modules/scheduled/index.js';
 
 const router = Router();
 
@@ -57,5 +58,6 @@ router.use('/wallets', walletsRoutes);
 router.use('/transactions', transactionsRoutes);
 router.use('/budgets', budgetsRoutes);
 router.use('/notifications', notificationsRoutes);
+router.use('/schedules', scheduledRoutes);
 
 export default router;
