@@ -70,7 +70,6 @@ model User {
   budgets       Budget[]
   notifications Notification[]
   auditLogs     AuditLog[]
-  scheduledTopUps ScheduledTopUp[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -189,34 +188,4 @@ model AuditLog {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("audit_logs")
-}
-
-// Scheduled Top-ups (auto top-up / scheduled purchases)
-model ScheduledTopUp {
-  id                    String   @id @default(uuid())
-  userId                String   @map("user_id")
-  phoneNumber           String?  @map("phone_number")
-  phoneNumberId         String?  @map("phone_number_id")
-  type                  String
-  network               String
-  amount                Decimal  @db.Decimal(12,2)
-  planId                String?  @map("plan_id")
-  scheduleType          String   @map("schedule_type")
-  scheduledAt           DateTime? @map("scheduled_at")
-  recurringTime         String?  @map("recurring_time")
-  recurringDayOfWeek    Int?     @map("recurring_day_of_week")
-  recurringDayOfMonth   Int?     @map("recurring_day_of_month")
-  maxExecutions         Int?     @map("max_executions")
-  totalExecutions       Int      @default(0) @map("total_executions")
-  status                String   @default("active")
-  nextExecutionAt       DateTime? @map("next_execution_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("scheduled_topups")
-  @@index([userId])
-  @@index([status])
 }
