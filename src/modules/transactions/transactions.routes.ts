@@ -11,6 +11,9 @@ router.use(protect);
 
 router.post('/deposit', validate(createDepositSchema), transactionController.deposit);
 router.post('/purchase', validate(createPurchaseSchema), transactionController.purchase);
-router.get('/history', transactionController.getHistory);
+router.post('/airtime', transactionController.purchaseAirtime);
+router.post('/data', transactionController.purchaseData);
+router.get('/history', transactionController.getTransactionHistory);
+router.get('/:id/verify', transactionController.verifyTransaction);
 
 export default router;

@@ -8,10 +8,13 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/User'
-export type * from './models/Wallet'
-export type * from './models/Transaction'
-export type * from './models/Budget'
-export type * from './models/Notification'
-export type * from './models/AuditLog'
-export type * from './commonInputTypes'
+export type * from './models/User.js'
+export type * from './models/Wallet.js'
+export type * from './models/Transaction.js'
+export type * from './models/Budget.js'
+export type * from './models/Notification.js'
+export type * from './models/AuditLog.js'
+export type * from './models/ScheduledTopUp.js'
+export type * from './models/ScheduledJobRun.js'
+export type * from './models/PhoneNumber.js'
+export type * from './commonInputTypes.js'

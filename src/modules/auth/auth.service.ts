@@ -31,8 +31,7 @@ export async function register(input: RegisterInput) {
             data: {
                 email: input.email,
                 passwordHash: hashedPassword,
-                firstName: input.firstName,
-                lastName: input.lastName,
+                fullName: input.fullName,
                 phoneNumber: input.phoneNumber,
                 role: 'USER',
                 isActive: true,
@@ -81,7 +80,7 @@ export async function login(input: LoginInput) {
             where: { id: user.id },
             data: { lastLoginAt: new Date() },
         })
-        .catch((err) => logger.error({ err }, 'Failed to update last login'));
+        .catch((err: unknown) => logger.error({ err }, 'Failed to update last login'));
 
     return generateAuthResponse(user);
 }
@@ -130,8 +129,7 @@ function generateAuthResponse(user: any) {
         user: {
             id: user.id,
             email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            fullName: user.fullName,
             role: user.role,
         },
         tokens: {

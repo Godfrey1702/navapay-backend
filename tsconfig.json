@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "ES2023",
-        "module": "ESNext",
+        "module": "nodenext",
         "lib": [
             "ES2023"
         ],
@@ -15,7 +15,7 @@
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
-        "moduleResolution": "bundler",
+        "moduleResolution": "nodenext",
         "baseUrl": ".",
         "paths": {
             "@/*": [

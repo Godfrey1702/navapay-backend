@@ -9,6 +9,7 @@ const router = Router();
 // All budget routes are protected
 router.use(protect);
 
+router.get('/', budgetController.getBudgets);
 router.post('/', validate(setBudgetSchema), budgetController.setBudget);
 router.get('/analytics', budgetController.getAnalytics);
 

@@ -2,11 +2,11 @@ import Redis from 'ioredis';
 import { env } from '../config/index.js';
 import { logger } from '../utils/logger.js';
 
-let redis: Redis | null = null;
+let redis: any = null;
 
-export function getRedisClient(): Redis {
+export function getRedisClient(): any {
     if (!redis) {
-        redis = new Redis({
+        redis = new (Redis as any)({
             host: env.REDIS_HOST,
             port: env.REDIS_PORT,
             password: env.REDIS_PASSWORD || undefined,
@@ -29,7 +29,7 @@ export function getRedisClient(): Redis {
             logger.info('✅ Redis connected successfully');
         });
 
-        redis.on('error', (error) => {
+        redis.on('error', (error: Error) => {
             logger.error({ error: error.message }, '❌ Redis connection error');
         });
 

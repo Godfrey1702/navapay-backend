@@ -28,6 +28,11 @@ const envSchema = z.object({
         .default('info'),
 
     CORS_ORIGIN: z.string().default('*'),
+
+    // Payment provider settings
+    PAYFLEX_API_KEY: z.string().optional().default(''),
+    PAYFLEX_BASE_URL: z.string().default('https://api.payflex.com.ng/v1'),
+    PAYSTACK_SECRET_KEY: z.string().optional().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);

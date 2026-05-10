@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // ─── Enums ──────────────────────────────────────────────────────────────────
@@ -50,14 +51,27 @@ enum NotificationType {
   SYSTEM_ALERT
 }
 
+enum Frequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum ScheduleRunStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+  PAUSED
+}
+
 // ─── Models ─────────────────────────────────────────────────────────────────
 
 model User {
   id              String    @id @default(uuid())
   email           String    @unique
   passwordHash    String    @map("password_hash")
-  firstName       String?   @map("first_name")
-  lastName        String?   @map("last_name")
+  fullName        String?   @map("full_name")
   phoneNumber     String?   @unique @map("phone_number")
   role            UserRole  @default(USER)
   isEmailVerified Boolean   @default(false) @map("is_email_verified")
@@ -70,6 +84,8 @@ model User {
   budgets       Budget[]
   notifications Notification[]
   auditLogs     AuditLog[]
+  scheduledTopUps ScheduledTopUp[]
+  phoneNumbers    PhoneNumber[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -189,3 +205,62 @@ model AuditLog {
 
   @@map("audit_logs")
 }
+
+// Scheduled Top-ups
+model ScheduledTopUp {
+  id            String   @id @default(cuid())
+  userId        String
+  type          String
+  phoneNumber   String
+  network       String
+  amount        Float
+  planId        String?
+  frequency     String
+  scheduledTime String
+  scheduledDay  Int?
+  status        String   @default("active")
+  nextRunAt     DateTime
+  lastRunAt     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  runs          ScheduledJobRun[]
+
+  @@map("scheduled_topups")
+}
+
+model ScheduledJobRun {
+  id         String           @id @default(uuid())
+  scheduleId String           @map("schedule_id")
+  runAt      DateTime         @map("run_at")
+  status     ScheduleRunStatus @default(PENDING)
+  attempts   Int              @default(0)
+  error      String?
+  transactionId String?       @map("transaction_id")
+
+  schedule ScheduledTopUp @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([scheduleId, runAt])
+  @@map("scheduled_job_runs")
+}
+
+model PhoneNumber {
+  id              String   @id @default(cuid())
+  userId          String
+  phoneNumber     String
+  network         String
+  label           String?
+  isDefault       Boolean  @default(false)
+  isVerified      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("phone_numbers")
+}
+

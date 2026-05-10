@@ -8,5 +8,9 @@ const router = Router();
 router.use(protect);
 
 router.get('/me', userController.getMe);
+router.patch('/me', userController.updateMe);
+router.get('/phone-numbers', userController.getPhoneNumbers);
+router.post('/phone-numbers', userController.addPhoneNumber);
+router.delete('/phone-numbers/:id', userController.deletePhoneNumber);
 
 export default router;

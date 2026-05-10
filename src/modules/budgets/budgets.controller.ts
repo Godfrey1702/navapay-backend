@@ -14,6 +14,17 @@ export async function setBudget(req: Request, res: Response, next: NextFunction)
     }
 }
 
+export async function getBudgets(req: Request, res: Response, next: NextFunction) {
+    try {
+        if (!req.user) throw new UnauthorizedError('User not authenticated');
+
+        const budgets = await budgetService.getBudgetsWithAnalytics(req.user.id);
+        sendSuccess(res, budgets, 'Budgets retrieved successfully');
+    } catch (error) {
+        next(error);
+    }
+}
+
 export async function getAnalytics(req: Request, res: Response, next: NextFunction) {
     try {
         if (!req.user) throw new UnauthorizedError('User not authenticated');

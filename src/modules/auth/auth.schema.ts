@@ -10,8 +10,7 @@ export const registerSchema = {
                 /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                 'Password must contain uppercase, lowercase, number and special character',
             ),
-        firstName: z.string().min(2, 'First name is required'),
-        lastName: z.string().min(2, 'Last name is required'),
+        fullName: z.string().min(2, 'Full name is required'),
         phoneNumber: z.string().optional(),
     }),
 };

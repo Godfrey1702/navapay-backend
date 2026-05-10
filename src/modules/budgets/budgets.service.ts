@@ -3,7 +3,7 @@ import {
     ServiceCategory,
     TransactionStatus,
     TransactionType
-} from '../../generated/prisma/client.js';
+} from '../../generated/prisma/enums.js';
 import { SetBudgetInput } from './budgets.schema.js';
 
 /**
@@ -37,17 +37,22 @@ export async function upsertBudget(userId: string, input: SetBudgetInput) {
 /**
  * Get budgets with spending analytics.
  */
-export async function getBudgetsWithAnalytics(userId: string, month: number, year: number) {
+export async function getBudgetsWithAnalytics(userId: string, month?: number, year?: number) {
     const budgets = await prisma.budget.findMany({
-        where: { userId, month, year },
+        where: month && year ? { userId, month, year } : { userId },
     });
 
     // For each budget, calculate current spending
     const analytics = await Promise.all(
-        budgets.map(async (budget) => {
+        budgets.map(async (budget: any) => {
             // Calculate total spent in this category and month
-            const startOfMonth = new Date(year, month - 1, 1);
-            const endOfMonth = new Date(year, month, 0, 23, 59, 59);
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1;
+            const useYear = year || currentYear;
+            const useMonth = month || currentMonth;
+            
+            const startOfMonth = new Date(useYear, useMonth - 1, 1);
+            const endOfMonth = new Date(useYear, useMonth, 0, 23, 59, 59);
 
             const aggregate = await prisma.transaction.aggregate({
                 _sum: { amount: true },

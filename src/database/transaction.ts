@@ -1,5 +1,6 @@
 import { prisma } from './prisma.js';
 import { logger } from '../utils/logger.js';
+import type { Prisma } from '../generated/prisma/client.js';
 
 interface TransactionOptions {
     maxWait?: number;
@@ -8,14 +9,14 @@ interface TransactionOptions {
 }
 
 export async function withTransaction<T>(
-    callback: (tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0]) => Promise<T>,
+    callback: (tx: Prisma.TransactionClient) => Promise<T>,
     options?: TransactionOptions,
 ): Promise<T> {
     const startTime = Date.now();
 
     try {
         const result = await prisma.$transaction(
-            async (tx) => {
+            async (tx: Prisma.TransactionClient) => {
                 return callback(tx);
             },
             {

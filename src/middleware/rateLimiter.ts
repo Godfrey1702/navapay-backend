@@ -18,8 +18,8 @@ export const rateLimiter = rateLimit({
 });
 
 export const strictRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
+    windowMs: 1 * 60 * 1000, // 1 minute window
+    max: 100, // increase from default
     standardHeaders: true,
     legacyHeaders: false,
     message: {

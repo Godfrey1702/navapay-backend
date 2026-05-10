@@ -4,6 +4,8 @@ import { sendSuccess } from '../../utils/response.js';
 import * as authService from './auth.service.js';
 import { logger } from '../../utils/logger.js';
 import { UnauthorizedError } from '../../utils/errors.js';
+import bcrypt from 'bcrypt';
+import { prisma } from '../../database/prisma.js';
 
 const COOKIE_OPTIONS: CookieOptions = {
     httpOnly: true,
@@ -66,4 +68,29 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
     } catch (error) {
         next(error);
     }
+}
+
+export async function getMe(req: Request, res: Response, next: NextFunction) {
+    const user = await prisma.user.findUnique({
+        where: { id: req.user!.id },
+        select: { id: true, email: true, firstName: true, lastName: true, role: true, createdAt: true },
+    });
+    sendSuccess(res, user, 'User retrieved successfully');
+}
+
+export async function forgotPassword(req: Request, res: Response, next: NextFunction) {
+    const { email } = req.body;
+    // In production: generate reset token, send email
+    // For now: acknowledge request
+    sendSuccess(res, { message: "If that email exists, a reset link has been sent." }, 'Password reset initiated');
+}
+
+export async function updatePassword(req: Request, res: Response, next: NextFunction) {
+    const { password } = req.body;
+    const hashed = await bcrypt.hash(password, 12);
+    await prisma.user.update({
+        where: { id: req.user!.id },
+        data: { passwordHash: hashed },
+    });
+    sendSuccess(res, { message: "Password updated" }, 'Password updated successfully');
 }

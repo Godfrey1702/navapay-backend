@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ServiceCategory } from '../../generated/prisma/client.js';
+import { ServiceCategory } from '../../generated/prisma/enums.js';
 
 export const setBudgetSchema = {
     body: z.object({

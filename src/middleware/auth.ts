@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken } from '../services/jwt.js';
 import { UnauthorizedError, ForbiddenError } from '../utils/errors.js';
 import { prisma } from '../database/prisma.js';
-import { UserRole } from '../generated/prisma/client.js';
+import { UserRole } from '../generated/prisma/enums.js';
 
 // Extend Express Request type to include user
 declare global {

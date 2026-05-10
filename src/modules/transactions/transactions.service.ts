@@ -6,7 +6,7 @@ import {
     TransactionStatus,
     TransactionType,
     ServiceCategory
-} from '../../generated/prisma/client.js';
+} from '../../generated/prisma/enums.js';
 import { CreateDepositInput, CreatePurchaseInput } from './transactions.schema.js';
 import { logger } from '../../utils/logger.js';
 
