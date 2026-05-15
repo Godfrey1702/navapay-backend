@@ -8,7 +8,173 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─── Enums ──────────────────────────────────────────────────────────────────
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  passwordHash    String           @map("password_hash")
+  phoneNumber     String?          @unique @map("phone_number")
+  role            UserRole         @default(USER)
+  isEmailVerified Boolean          @default(false) @map("is_email_verified")
+  isActive        Boolean          @default(true) @map("is_active")
+  lastLoginAt     DateTime?        @map("last_login_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  fullName        String?          @map("full_name")
+  auditLogs       AuditLog[]
+  budgets         Budget[]
+  notifications   Notification[]
+  phoneNumbers    PhoneNumber[]
+  scheduledTopUps ScheduledTopUp[]
+  transactions    Transaction[]
+  wallet          Wallet?
+
+  @@index([email])
+  @@index([phoneNumber])
+  @@map("users")
+}
+
+model Wallet {
+  id           String        @id @default(uuid())
+  userId       String        @unique @map("user_id")
+  balance      Decimal       @default(0.00) @db.Decimal(12, 2)
+  currency     String        @default("NGN")
+  status       WalletStatus  @default(ACTIVE)
+  version      Int           @default(0)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  transactions Transaction[]
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("wallets")
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  reference       String            @unique
+  externalRef     String?           @map("external_ref")
+  userId          String            @map("user_id")
+  walletId        String            @map("wallet_id")
+  amount          Decimal           @db.Decimal(12, 2)
+  fee             Decimal           @default(0.00) @db.Decimal(10, 2)
+  totalAmount     Decimal           @map("total_amount") @db.Decimal(12, 2)
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  category        ServiceCategory?
+  description     String?
+  metadata        Json?
+  balanceSnapshot Decimal?          @map("balance_snapshot") @db.Decimal(12, 2)
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  user            User              @relation(fields: [userId], references: [id])
+  wallet          Wallet            @relation(fields: [walletId], references: [id])
+
+  @@index([userId])
+  @@index([walletId])
+  @@index([reference])
+  @@index([status])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+model Budget {
+  id                    String          @id @default(uuid())
+  userId                String          @map("user_id")
+  category              ServiceCategory
+  amountLimit           Decimal         @map("amount_limit") @db.Decimal(12, 2)
+  month                 Int
+  year                  Int
+  alertThresholdPercent Int             @default(80) @map("alert_threshold_percent")
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category, month, year])
+  @@map("budgets")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String           @map("user_id")
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false) @map("is_read")
+  metadata  Json?
+  createdAt DateTime         @default(now()) @map("created_at")
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?  @map("user_id")
+  action     String
+  resource   String
+  resourceId String?  @map("resource_id")
+  details    Json?
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model ScheduledTopUp {
+  id            String            @id @default(cuid())
+  userId        String
+  type          String
+  phoneNumber   String
+  network       String
+  amount        Float
+  planId        String?
+  frequency     String
+  scheduledTime String
+  scheduledDay  Int?
+  status        String            @default("active")
+  nextRunAt     DateTime
+  lastRunAt     DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  runs          ScheduledJobRun[]
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("scheduled_topups")
+}
+
+model ScheduledJobRun {
+  id            String            @id @default(uuid())
+  scheduleId    String            @map("schedule_id")
+  runAt         DateTime          @map("run_at")
+  status        ScheduleRunStatus @default(PENDING)
+  attempts      Int               @default(0)
+  error         String?
+  transactionId String?           @map("transaction_id")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+  schedule      ScheduledTopUp    @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@unique([scheduleId, runAt])
+  @@map("scheduled_job_runs")
+}
+
+model PhoneNumber {
+  id          String   @id @default(cuid())
+  userId      String
+  phoneNumber String
+  network     String
+  label       String?
+  isDefault   Boolean  @default(false)
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("phone_numbers")
+}
 
 enum UserRole {
   USER
@@ -22,10 +188,10 @@ enum WalletStatus {
 }
 
 enum TransactionType {
-  DEPOSIT       // Funding the wallet
-  PURCHASE      // Buying data/airtime
-  REFUND        // Reversal of purchase
-  ADJUSTMENT    // Admin correction
+  DEPOSIT
+  PURCHASE
+  REFUND
+  ADJUSTMENT
 }
 
 enum TransactionStatus {
@@ -64,203 +230,3 @@ enum ScheduleRunStatus {
   FAILED
   PAUSED
 }
-
-// ─── Models ─────────────────────────────────────────────────────────────────
-
-model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
-  passwordHash    String    @map("password_hash")
-  fullName        String?   @map("full_name")
-  phoneNumber     String?   @unique @map("phone_number")
-  role            UserRole  @default(USER)
-  isEmailVerified Boolean   @default(false) @map("is_email_verified")
-  isActive        Boolean   @default(true) @map("is_active")
-  lastLoginAt     DateTime? @map("last_login_at")
-  
-  // Relations
-  wallet        Wallet?
-  transactions  Transaction[]
-  budgets       Budget[]
-  notifications Notification[]
-  auditLogs     AuditLog[]
-  scheduledTopUps ScheduledTopUp[]
-  phoneNumbers    PhoneNumber[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("users")
-  @@index([email])
-  @@index([phoneNumber])
-}
-
-model Wallet {
-  id          String       @id @default(uuid())
-  userId      String       @unique @map("user_id")
-  balance     Decimal      @default(0.00) @db.Decimal(12, 2)
-  currency    String       @default("NGN")
-  status      WalletStatus @default(ACTIVE)
-  
-  // Optimistic Locking
-  version     Int          @default(0)
-
-  // Relations
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions Transaction[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("wallets")
-}
-
-model Transaction {
-  id              String            @id @default(uuid())
-  reference       String            @unique // Internal unique ref
-  externalRef     String?           @map("external_ref") // Provider ref
-  userId          String            @map("user_id")
-  walletId        String            @map("wallet_id")
-  amount          Decimal           @db.Decimal(12, 2)
-  fee             Decimal           @default(0.00) @db.Decimal(10, 2)
-  totalAmount     Decimal           @map("total_amount") @db.Decimal(12, 2) // amount + fee
-  type            TransactionType
-  status          TransactionStatus @default(PENDING)
-  category        ServiceCategory?
-  description     String?
-  metadata        Json?             // Flexible JSON for provider details
-  
-  // Snapshot of balance after transaction (for auditing)
-  balanceSnapshot Decimal?          @map("balance_snapshot") @db.Decimal(12, 2)
-
-  // Relations
-  user   User   @relation(fields: [userId], references: [id])
-  wallet Wallet @relation(fields: [walletId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("transactions")
-  @@index([userId])
-  @@index([walletId])
-  @@index([reference])
-  @@index([status])
-  @@index([createdAt])
-}
-
-model Budget {
-  id          String          @id @default(uuid())
-  userId      String          @map("user_id")
-  category    ServiceCategory
-  amountLimit Decimal         @map("amount_limit") @db.Decimal(12, 2)
-  month       Int             // 1-12
-  year        Int             // e.g. 2024
-  
-  // Alert thresholds configuration (e.g., notify at 80%)
-  alertThresholdPercent Int @default(80) @map("alert_threshold_percent")
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([userId, category, month, year]) // One budget per category per month
-  @@map("budgets")
-}
-
-model Notification {
-  id        String           @id @default(uuid())
-  userId    String           @map("user_id")
-  type      NotificationType
-  title     String
-  message   String
-  isRead    Boolean          @default(false) @map("is_read")
-  metadata  Json?            // Link to transaction ID, etc.
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("notifications")
-  @@index([userId])
-  @@index([isRead])
-}
-
-model AuditLog {
-  id        String   @id @default(uuid())
-  userId    String?  @map("user_id") // Nullable for system actions
-  action    String
-  resource  String
-  resourceId String? @map("resource_id")
-  details   Json?
-  ipAddress String?  @map("ip_address")
-  userAgent String?  @map("user_agent")
-
-  // Relations
-  user User? @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("audit_logs")
-}
-
-// Scheduled Top-ups
-model ScheduledTopUp {
-  id            String   @id @default(cuid())
-  userId        String
-  type          String
-  phoneNumber   String
-  network       String
-  amount        Float
-  planId        String?
-  frequency     String
-  scheduledTime String
-  scheduledDay  Int?
-  status        String   @default("active")
-  nextRunAt     DateTime
-  lastRunAt     DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  runs          ScheduledJobRun[]
-
-  @@map("scheduled_topups")
-}
-
-model ScheduledJobRun {
-  id         String           @id @default(uuid())
-  scheduleId String           @map("schedule_id")
-  runAt      DateTime         @map("run_at")
-  status     ScheduleRunStatus @default(PENDING)
-  attempts   Int              @default(0)
-  error      String?
-  transactionId String?       @map("transaction_id")
-
-  schedule ScheduledTopUp @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([scheduleId, runAt])
-  @@map("scheduled_job_runs")
-}
-
-model PhoneNumber {
-  id              String   @id @default(cuid())
-  userId          String
-  phoneNumber     String
-  network         String
-  label           String?
-  isDefault       Boolean  @default(false)
-  isVerified      Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("phone_numbers")
-}
-

@@ -300,8 +300,8 @@ export type ScheduledTopUpWhereInput = {
   lastRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   runs?: Prisma.ScheduledJobRunListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type ScheduledTopUpOrderByWithRelationInput = {
@@ -320,8 +320,8 @@ export type ScheduledTopUpOrderByWithRelationInput = {
   lastRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
   runs?: Prisma.ScheduledJobRunOrderByRelationAggregateInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ScheduledTopUpWhereUniqueInput = Prisma.AtLeast<{
@@ -343,8 +343,8 @@ export type ScheduledTopUpWhereUniqueInput = Prisma.AtLeast<{
   lastRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   runs?: Prisma.ScheduledJobRunListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type ScheduledTopUpOrderByWithAggregationInput = {
@@ -406,8 +406,8 @@ export type ScheduledTopUpCreateInput = {
   lastRunAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutScheduledTopUpsInput
   runs?: Prisma.ScheduledJobRunCreateNestedManyWithoutScheduleInput
+  user: Prisma.UserCreateNestedOneWithoutScheduledTopUpsInput
 }
 
 export type ScheduledTopUpUncheckedCreateInput = {
@@ -444,8 +444,8 @@ export type ScheduledTopUpUpdateInput = {
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutScheduledTopUpsNestedInput
   runs?: Prisma.ScheduledJobRunUpdateManyWithoutScheduleNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutScheduledTopUpsNestedInput
 }
 
 export type ScheduledTopUpUncheckedUpdateInput = {
@@ -959,8 +959,8 @@ export type ScheduledTopUpSelect<ExtArgs extends runtime.Types.Extensions.Intern
   lastRunAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   runs?: boolean | Prisma.ScheduledTopUp$runsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ScheduledTopUpCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduledTopUp"]>
 
@@ -1022,8 +1022,8 @@ export type ScheduledTopUpSelectScalar = {
 
 export type ScheduledTopUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "phoneNumber" | "network" | "amount" | "planId" | "frequency" | "scheduledTime" | "scheduledDay" | "status" | "nextRunAt" | "lastRunAt" | "createdAt" | "updatedAt", ExtArgs["result"]["scheduledTopUp"]>
 export type ScheduledTopUpInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   runs?: boolean | Prisma.ScheduledTopUp$runsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ScheduledTopUpCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ScheduledTopUpIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1036,8 +1036,8 @@ export type ScheduledTopUpIncludeUpdateManyAndReturn<ExtArgs extends runtime.Typ
 export type $ScheduledTopUpPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ScheduledTopUp"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs>
     runs: Prisma.$ScheduledJobRunPayload<ExtArgs>[]
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1449,8 +1449,8 @@ readonly fields: ScheduledTopUpFieldRefs;
  */
 export interface Prisma__ScheduledTopUpClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   runs<T extends Prisma.ScheduledTopUp$runsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ScheduledTopUp$runsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScheduledJobRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
