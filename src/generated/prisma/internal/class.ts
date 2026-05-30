@@ -23,7 +23,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "C:\\Users\\odobi\\OneDrive\\Documents\\Godfrey_subit\\Godfray\\src\\generated\\prisma",
+      "value": "C:\\Users\\odobi\\Godfray\\Godfray\\src\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -37,7 +37,7 @@ const config: runtime.GetPrismaClientConfig = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\odobi\\OneDrive\\Documents\\Godfrey_subit\\Godfray\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\odobi\\Godfray\\Godfray\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../../prisma",
