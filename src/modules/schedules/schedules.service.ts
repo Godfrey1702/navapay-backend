@@ -1,23 +1,27 @@
 import { prisma } from '../../database/prisma.js';
 import { NotFoundError, BadRequestError } from '../../utils/errors.js';
 import { CreateScheduleInput, UpdateScheduleInput } from './schedules.schema.js';
+import { calculateNextRun } from '../../lib/schedule.js';
 
 export async function createSchedule(userId: string, payload: CreateScheduleInput) {
-  // compute nextRunAt = startDate or now
-  const start = payload.startDate ? new Date(payload.startDate) : new Date();
+  const nextRunAt = calculateNextRun(
+    payload.frequency,
+    payload.scheduledTime,
+    payload.scheduledDay
+  );
+
   const schedule = await prisma.scheduledTopUp.create({
     data: {
       userId,
-      amount: payload.amount,
-      category: payload.category,
-      provider: payload.provider,
+      type: payload.type,
       phoneNumber: payload.phoneNumber,
+      network: payload.network,
+      amount: payload.amount,
+      planId: payload.planId,
       frequency: payload.frequency,
-      startDate: start,
-      endDate: payload.endDate ? new Date(payload.endDate) : undefined,
-      nextRunAt: start,
-      retryPolicy: payload.pauseOnInsufficientFunds === undefined ? {} : { pauseOnInsufficientFunds: payload.pauseOnInsufficientFunds },
-      pauseOnInsufficientFunds: payload.pauseOnInsufficientFunds ?? true,
+      scheduledTime: payload.scheduledTime,
+      scheduledDay: payload.scheduledDay,
+      nextRunAt,
     },
   });
 
@@ -51,15 +55,17 @@ export async function setPaused(userId: string, id: string, paused: boolean) {
   const schedule = await prisma.scheduledTopUp.findUnique({ where: { id } });
   if (!schedule || schedule.userId !== userId) throw new NotFoundError('Schedule not found');
 
-  const updated = await prisma.scheduledTopUp.update({ where: { id }, data: { paused } });
+  const updated = await prisma.scheduledTopUp.update({
+    where: { id },
+    data: { status: paused ? "paused" : "active" },
+  });
   return updated;
 }
 
 export async function enqueueRun(userId: string, id: string, idempotencyKey?: string) {
   const schedule = await prisma.scheduledTopUp.findUnique({ where: { id } });
   if (!schedule || schedule.userId !== userId) throw new NotFoundError('Schedule not found');
-  if (!schedule.active) throw new BadRequestError('Schedule is not active');
-  if (schedule.paused) throw new BadRequestError('Schedule is paused');
+  if (schedule.status !== "active") throw new BadRequestError('Schedule is not active');
 
   // create a run record with PENDING status
   const now = new Date();

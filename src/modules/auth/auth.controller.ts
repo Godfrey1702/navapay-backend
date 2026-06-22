@@ -4,7 +4,7 @@ import { sendSuccess } from '../../utils/response.js';
 import * as authService from './auth.service.js';
 import { logger } from '../../utils/logger.js';
 import { UnauthorizedError } from '../../utils/errors.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { prisma } from '../../database/prisma.js';
 
 const COOKIE_OPTIONS: CookieOptions = {
@@ -73,7 +73,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
 export async function getMe(req: Request, res: Response, next: NextFunction) {
     const user = await prisma.user.findUnique({
         where: { id: req.user!.id },
-        select: { id: true, email: true, firstName: true, lastName: true, role: true, createdAt: true },
+        select: { id: true, email: true, fullName: true, role: true, createdAt: true },
     });
     sendSuccess(res, user, 'User retrieved successfully');
 }

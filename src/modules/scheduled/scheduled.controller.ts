@@ -12,8 +12,9 @@ export async function createScheduled(req: Request, res: Response) {
 }
 
 export async function updateScheduled(req: Request, res: Response) {
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : (req.params.id as string);
   const data = await service.updateScheduledTopUp(
-    req.params.id,
+    id,
     req.user!.id,
     req.body
   );
@@ -21,6 +22,7 @@ export async function updateScheduled(req: Request, res: Response) {
 }
 
 export async function cancelScheduled(req: Request, res: Response) {
-  await service.cancelScheduledTopUp(req.params.id, req.user!.id);
+  const id = Array.isArray(req.params.id) ? req.params.id[0] : (req.params.id as string);
+  await service.cancelScheduledTopUp(id, req.user!.id);
   res.json({ success: true, data: { message: "Schedule cancelled" } });
 }
