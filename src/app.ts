@@ -21,12 +21,17 @@ app.use(
     cors({
         origin: [
             "http://localhost:8080",
-            "http://localhost:8081", 
+            "http://localhost:8081",
             "http://localhost:8082",
             "http://localhost:8083",
             "http://localhost:5173",
             "http://192.168.182.58:8080",
             "http://192.168.182.58:5173",
+            "http://192.168.33.128:8080",
+            "http://192.168.33.128:5173",
+            "http://192.168.33.128:8081",
+            "http://192.168.33.128:8082",
+            "http://192.168.33.128:8083",
         ],
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
