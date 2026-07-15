@@ -14,7 +14,19 @@ export async function getWalletByUserId(userId: string) {
 
 export async function initializeWalletPayment(userId: string, email: string, amount: number) {
     const reference = `DEP-${uuidv4().split('-')[0].toUpperCase()}-${Date.now()}`;
-    const result = await paystackProvider.initializePayment({ email, amount, reference });
+
+    console.log('[initializeWalletPayment] amount:', amount, 'kobo will be sent:', amount * 100);
+    console.log('[initializeWalletPayment] email:', email, 'reference:', reference);
+
+    let result: any;
+    try {
+        result = await paystackProvider.initializePayment({ email, amount, reference });
+        console.log('[initializeWalletPayment] Paystack response:', JSON.stringify(result, null, 2));
+    } catch (err: any) {
+        console.error('[initializeWalletPayment] Paystack error:', err?.response?.status, JSON.stringify(err?.response?.data ?? err?.message));
+        throw err;
+    }
+
     return {
         authorization_url: result.authorization_url as string,
         reference: result.reference as string,
@@ -23,7 +35,17 @@ export async function initializeWalletPayment(userId: string, email: string, amo
 }
 
 export async function verifyAndCreditWallet(userId: string, reference: string) {
-    const verification = await paystackProvider.verifyPayment(reference);
+    console.log('[verifyAndCreditWallet] verifying reference:', reference);
+
+    let verification: any;
+    try {
+        verification = await paystackProvider.verifyPayment(reference);
+        console.log('[verifyAndCreditWallet] Paystack verify status:', verification?.status, 'gateway_response:', verification?.gateway_response);
+        console.log('[verifyAndCreditWallet] full verify response:', JSON.stringify(verification, null, 2));
+    } catch (err: any) {
+        console.error('[verifyAndCreditWallet] Paystack verify error:', err?.response?.status, JSON.stringify(err?.response?.data ?? err?.message));
+        throw err;
+    }
 
     if (verification.status !== 'success') {
         throw new Error(`Payment not successful: ${verification.gateway_response}`);
@@ -38,6 +60,7 @@ export async function verifyAndCreditWallet(userId: string, reference: string) {
         // Idempotency: skip if this reference was already processed
         const existing = await tx.transaction.findUnique({ where: { reference } });
         if (existing) {
+            console.log('[verifyAndCreditWallet] reference already processed, returning current wallet');
             return tx.wallet.findUnique({ where: { userId } });
         }
 

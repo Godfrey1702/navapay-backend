@@ -18,6 +18,8 @@ export async function initializePayment(req: Request, res: Response, next: NextF
         if (!req.user) throw new UnauthorizedError('User not authenticated');
 
         const { amount } = req.body;
+        console.log('[initializePayment] req.body:', req.body, 'typeof amount:', typeof amount);
+
         if (typeof amount !== 'number' || amount <= 0) {
             throw new BadRequestError('A valid positive amount is required');
         }
@@ -29,6 +31,7 @@ export async function initializePayment(req: Request, res: Response, next: NextF
         );
         sendSuccess(res, result, 'Payment initialized');
     } catch (error) {
+        console.error('[initializePayment] error:', error);
         next(error);
     }
 }
@@ -38,11 +41,14 @@ export async function verifyPayment(req: Request, res: Response, next: NextFunct
         if (!req.user) throw new UnauthorizedError('User not authenticated');
 
         const { reference } = req.params;
+        console.log('[verifyPayment] reference:', reference, 'userId:', req.user.id);
+
         if (!reference) throw new BadRequestError('Payment reference is required');
 
         const wallet = await walletService.verifyAndCreditWallet(req.user.id, reference);
         sendSuccess(res, wallet, 'Payment verified and wallet credited');
     } catch (error) {
+        console.error('[verifyPayment] error:', error);
         next(error);
     }
 }
