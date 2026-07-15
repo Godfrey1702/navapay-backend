@@ -4,9 +4,10 @@ import { protect } from '../../middleware/auth.js';
 
 const router = Router();
 
-// All wallet routes are protected
 router.use(protect);
 
 router.get('/me', walletController.getMyWallet);
+router.post('/initialize-payment', walletController.initializePayment);
+router.get('/verify-payment/:reference', walletController.verifyPayment);
 
 export default router;
