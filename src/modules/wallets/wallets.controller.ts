@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as walletService from './wallets.service.js';
+import * as clubkonnect from '../../providers/clubkonnect.js';
 import { sendSuccess } from '../../utils/response.js';
 import { UnauthorizedError, BadRequestError } from '../../utils/errors.js';
 
@@ -40,7 +41,7 @@ export async function verifyPayment(req: Request, res: Response, next: NextFunct
     try {
         if (!req.user) throw new UnauthorizedError('User not authenticated');
 
-        const { reference } = req.params;
+        const reference = String(req.params.reference);
         console.log('[verifyPayment] reference:', reference, 'userId:', req.user.id);
 
         if (!reference) throw new BadRequestError('Payment reference is required');
@@ -49,6 +50,15 @@ export async function verifyPayment(req: Request, res: Response, next: NextFunct
         sendSuccess(res, wallet, 'Payment verified and wallet credited');
     } catch (error) {
         console.error('[verifyPayment] error:', error);
+        next(error);
+    }
+}
+
+export async function getClubkonnectBalance(req: Request, res: Response, next: NextFunction) {
+    try {
+        const balance = await clubkonnect.checkBalance();
+        sendSuccess(res, { balance }, 'Clubkonnect float balance retrieved');
+    } catch (error) {
         next(error);
     }
 }

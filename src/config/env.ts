@@ -33,6 +33,11 @@ const envSchema = z.object({
     PAYFLEX_API_KEY: z.string().optional().default(''),
     PAYFLEX_BASE_URL: z.string().default('https://api.payflex.com.ng/v1'),
     PAYSTACK_SECRET_KEY: z.string().optional().default(''),
+
+    // VTU provider — Clubkonnect (Nellobyte Systems)
+    CLUBKONNECT_USER_ID: z.string().optional().default(''),
+    CLUBKONNECT_API_KEY: z.string().optional().default(''),
+    CLUBKONNECT_BASE_URL: z.string().default('https://www.nellobytesystems.com'),
 });
 
 const parsed = envSchema.safeParse(process.env);

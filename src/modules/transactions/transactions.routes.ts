@@ -6,7 +6,10 @@ import { createDepositSchema, createPurchaseSchema } from './transactions.schema
 
 const router = Router();
 
-// All transaction routes are protected
+// Public — no auth required
+router.get('/data-plans/:network', transactionController.getDataPlans);
+
+// All routes below require authentication
 router.use(protect);
 
 router.post('/deposit', validate(createDepositSchema), transactionController.deposit);
