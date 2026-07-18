@@ -20,7 +20,7 @@ function networkCode(network: string): string {
     return NETWORK_CODES[network.toLowerCase()] ?? network;
 }
 
-// ─── Hardcoded data plan catalogue ──────────────────────────────────────────
+// ─── Data plan type ──────────────────────────────────────────────────────────
 
 export interface DataPlan {
     id: string;
@@ -31,7 +31,8 @@ export interface DataPlan {
     validity: string;
 }
 
-const DATA_PLANS: Record<string, DataPlan[]> = {
+// Used as fallback when the live API is unreachable
+const FALLBACK_PLANS: Record<string, DataPlan[]> = {
     mtn: [
         { id: '168', name: '500MB', code: '168', amount: 150,  network: 'MTN', validity: '1 day' },
         { id: '169', name: '1GB',   code: '169', amount: 200,  network: 'MTN', validity: '1 day' },
@@ -79,18 +80,21 @@ export async function purchaseAirtime(
     requestId: string,
 ) {
     try {
-        const { data } = await client.get('/APIAirtimeV1.asp', {
-            params: {
-                ...credentials(),
-                MobileNetwork: networkCode(network),
-                Amount: amount,
-                MobileNumber: phoneNumber,
-                RequestID: requestId,
-                CallBackURL: '',
-            },
-        });
+        const params = {
+            ...credentials(),
+            MobileNetwork: networkCode(network),
+            Amount: amount,
+            MobileNumber: phoneNumber,
+            RequestID: requestId,
+            CallBackURL: '',
+        };
+        const qs = new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)])).toString();
+        console.log('CALLING CLUBKONNECT URL:', `${env.CLUBKONNECT_BASE_URL}/APIAirtimeV1.asp?${qs}`);
+        console.log('PARAMS:', JSON.stringify({ ...params, APIKey: '***' }));
 
-        console.log('[clubkonnect.purchaseAirtime] response:', JSON.stringify(data));
+        const { data } = await client.get('/APIAirtimeV1.asp', { params });
+
+        console.log('CLUBKONNECT RAW RESPONSE:', JSON.stringify(data));
 
         if (data?.statuscode !== '100') {
             throw new Error(data?.status ?? 'Airtime purchase failed');
@@ -137,8 +141,35 @@ export async function purchaseData(
 }
 
 export async function getDataPlans(network: string): Promise<DataPlan[]> {
-    const key = network.toLowerCase().replace(/\s/g, '');
-    return DATA_PLANS[key] ?? [];
+    const code = networkCode(network);
+    const networkLabel = network.toUpperCase();
+
+    try {
+        const { data } = await client.get('/APIDatabundleNetworkV1.asp', {
+            params: {
+                UserID: env.CLUBKONNECT_USER_ID,
+                MobileNetwork: code,
+            },
+        });
+
+        console.log('[clubkonnect.getDataPlans] response:', JSON.stringify(data));
+
+        const raw: any[] = Array.isArray(data) ? data : [];
+        if (raw.length === 0) throw new Error('Empty plan list from API');
+
+        return raw.map((p) => ({
+            id:       String(p.DataPlan),
+            code:     String(p.DataPlan),
+            name:     p.DataVolume   ?? p.DataAllowance ?? 'Data Plan',
+            validity: p.DataValidity ?? '',
+            amount:   parseFloat(p.DataPrice ?? '0'),
+            network:  networkLabel,
+        }));
+    } catch (err: any) {
+        console.error('[clubkonnect.getDataPlans] live fetch failed — using fallback:', err.message);
+        const key = network.toLowerCase().replace(/\s/g, '');
+        return FALLBACK_PLANS[key] ?? [];
+    }
 }
 
 export async function checkBalance(): Promise<number> {

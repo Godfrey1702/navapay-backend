@@ -39,7 +39,17 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
 
         const requestId = idempotencyKey || `AIR-${userId}-${Date.now()}`;
 
-        const result = await clubkonnect.purchaseAirtime(phoneNumber, amount, network, requestId);
+        console.log('AIRTIME REQUEST BODY:', req.body);
+        console.log('PURCHASE REQUEST:', { phoneNumber, amount, amountType: typeof amount, network, requestId });
+
+        let result: any;
+        try {
+            result = await clubkonnect.purchaseAirtime(phoneNumber, amount, network, requestId);
+            console.log('CLUBKONNECT AIRTIME RESPONSE:', JSON.stringify(result));
+        } catch (err: any) {
+            console.error('CLUBKONNECT AIRTIME ERROR:', err.message);
+            return res.status(400).json({ success: false, message: err.message });
+        }
 
         await prisma.wallet.update({
             where: { id: wallet.id },
@@ -79,7 +89,16 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
 
         const requestId = idempotencyKey || `DATA-${userId}-${Date.now()}`;
 
-        const result = await clubkonnect.purchaseData(phoneNumber, planId, network, requestId);
+        console.log('PURCHASE REQUEST:', { phoneNumber, planId, amount, network, requestId });
+
+        let result: any;
+        try {
+            result = await clubkonnect.purchaseData(phoneNumber, planId, network, requestId);
+            console.log('CLUBKONNECT DATA RESPONSE:', result);
+        } catch (err: any) {
+            console.error('CLUBKONNECT DATA ERROR:', err.message);
+            return res.status(400).json({ success: false, message: err.message });
+        }
 
         await prisma.wallet.update({
             where: { id: wallet.id },
