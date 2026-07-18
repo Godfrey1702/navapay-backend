@@ -89,12 +89,14 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
 
         const requestId = idempotencyKey || `DATA-${userId}-${Date.now()}`;
 
+        console.log('DATA PURCHASE BODY:', req.body);
+        console.log('PLAN CODE BEING SENT:', planId);
         console.log('PURCHASE REQUEST:', { phoneNumber, planId, amount, network, requestId });
 
         let result: any;
         try {
             result = await clubkonnect.purchaseData(phoneNumber, planId, network, requestId);
-            console.log('CLUBKONNECT DATA RESPONSE:', result);
+            console.log('CLUBKONNECT DATA RESPONSE:', JSON.stringify(result));
         } catch (err: any) {
             console.error('CLUBKONNECT DATA ERROR:', err.message);
             return res.status(400).json({ success: false, message: err.message });
