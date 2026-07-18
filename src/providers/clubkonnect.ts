@@ -92,13 +92,13 @@ export async function purchaseAirtime(
 
         console.log('[clubkonnect.purchaseAirtime] response:', JSON.stringify(data));
 
-        if (data?.STATUS !== 'SUCCESSFUL') {
-            throw new Error(data?.RESPONSE ?? 'Airtime purchase failed');
+        if (data?.statuscode !== '100') {
+            throw new Error(data?.status ?? 'Airtime purchase failed');
         }
 
-        return { success: true, data, message: 'Airtime purchased successfully' };
+        return { success: true, orderId: data.orderid, status: data.status };
     } catch (err: any) {
-        const message = err.message ?? err.response?.data?.RESPONSE ?? 'Airtime purchase failed';
+        const message = err.message ?? 'Airtime purchase failed';
         console.error('[clubkonnect.purchaseAirtime] error:', message);
         throw new Error(message);
     }
@@ -124,13 +124,13 @@ export async function purchaseData(
 
         console.log('[clubkonnect.purchaseData] response:', JSON.stringify(data));
 
-        if (data?.STATUS !== 'SUCCESSFUL') {
-            throw new Error(data?.RESPONSE ?? 'Data purchase failed');
+        if (data?.statuscode !== '100') {
+            throw new Error(data?.status ?? 'Data purchase failed');
         }
 
-        return { success: true, data, message: 'Data purchased successfully' };
+        return { success: true, orderId: data.orderid, status: data.status };
     } catch (err: any) {
-        const message = err.message ?? err.response?.data?.RESPONSE ?? 'Data purchase failed';
+        const message = err.message ?? 'Data purchase failed';
         console.error('[clubkonnect.purchaseData] error:', message);
         throw new Error(message);
     }
@@ -149,7 +149,7 @@ export async function checkBalance(): Promise<number> {
 
         console.log('[clubkonnect.checkBalance] response:', JSON.stringify(data));
 
-        const balance = parseFloat(data?.BALANCE ?? '0');
+        const balance = parseFloat(data?.balance ?? '0');
         return isNaN(balance) ? 0 : balance;
     } catch (err: any) {
         const message = err.message ?? 'Failed to fetch Clubkonnect balance';
@@ -169,7 +169,7 @@ export async function queryTransaction(requestId: string) {
 
         console.log('[clubkonnect.queryTransaction] response:', JSON.stringify(data));
 
-        return { success: data?.STATUS === 'SUCCESSFUL', data, message: data?.RESPONSE ?? '' };
+        return { success: data?.status === 'ORDER_COMPLETED', data, message: data?.status ?? '' };
     } catch (err: any) {
         const message = err.message ?? 'Transaction query failed';
         console.error('[clubkonnect.queryTransaction] error:', message);
