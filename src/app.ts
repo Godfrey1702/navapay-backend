@@ -19,20 +19,27 @@ const app = express();
 app.use(helmet());
 app.use(
     cors({
-        origin: [
-            "http://localhost:8080",
-            "http://localhost:8081",
-            "http://localhost:8082",
-            "http://localhost:8083",
-            "http://localhost:5173",
-            "http://192.168.182.58:8080",
-            "http://192.168.182.58:5173",
-            "http://192.168.33.128:8080",
-            "http://192.168.33.128:5173",
-            "http://192.168.33.128:8081",
-            "http://192.168.33.128:8082",
-            "http://192.168.33.128:8083",
-        ],
+        origin: (origin, callback) => {
+            const allowedOrigins = [
+                "http://localhost:8080",
+                "http://localhost:8081",
+                "http://localhost:8082",
+                "http://localhost:8083",
+                "http://localhost:5173",
+            ];
+
+            if (!origin) return callback(null, true);
+
+            if (
+                allowedOrigins.includes(origin) ||
+                /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:(8080|8081|8082|8083|5173|3000)$/.test(origin) ||
+                /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}:(8080|8081|8082|8083|5173|3000)$/.test(origin)
+            ) {
+                return callback(null, true);
+            }
+
+            return callback(new Error("Not allowed by CORS"));
+        },
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
