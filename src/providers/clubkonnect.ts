@@ -145,9 +145,10 @@ export async function getDataPlans(network: string): Promise<DataPlan[]> {
     const networkLabel = network.toUpperCase();
 
     try {
-        const { data } = await client.get('/APIDatabundleNetworkV1.asp', {
+        const { data } = await client.get('/APIDatabundleNetworkV2.asp', {
             params: {
                 UserID: env.CLUBKONNECT_USER_ID,
+                APIKey: env.CLUBKONNECT_API_KEY,
                 MobileNetwork: code,
             },
         });
