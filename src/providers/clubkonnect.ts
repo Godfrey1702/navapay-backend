@@ -10,10 +10,11 @@ const client = axios.create({
 
 const NETWORK_CODES: Record<string, string> = {
     mtn: '01',
-    airtel: '02',
-    glo: '03',
-    '9mobile': '04',
-    etisalat: '04',
+    glo: '02',
+    '9mobile': '03',
+    etisalat: '03',
+    t2mobile: '03',
+    airtel: '04',
 };
 
 function networkCode(network: string): string {
@@ -32,33 +33,32 @@ export interface DataPlan {
 }
 
 // Used as fallback when the live API is unreachable
+// Plan codes confirmed via live API probe against APIDatabundleV1.asp.
+// GLO codes 200 and 500 confirmed ORDER_RECEIVED.
+// MTN, Airtel, 9mobile codes TBD — fetch from Clubkonnect support or dashboard.
 const FALLBACK_PLANS: Record<string, DataPlan[]> = {
     mtn: [
-        { id: '168', name: '500MB', code: '168', amount: 150,  network: 'MTN', validity: '1 day' },
-        { id: '169', name: '1GB',   code: '169', amount: 200,  network: 'MTN', validity: '1 day' },
-        { id: '170', name: '2GB',   code: '170', amount: 300,  network: 'MTN', validity: '2 days' },
-        { id: '113', name: '1GB',   code: '113', amount: 300,  network: 'MTN', validity: '30 days' },
-        { id: '110', name: '2GB',   code: '110', amount: 500,  network: 'MTN', validity: '30 days' },
-        { id: '114', name: '5GB',   code: '114', amount: 1500, network: 'MTN', validity: '30 days' },
-        { id: '116', name: '10GB',  code: '116', amount: 2500, network: 'MTN', validity: '30 days' },
+        // MTN codes not yet confirmed — purchases will return INVALID_DATAPLAN
+        // until real codes are obtained from Clubkonnect dashboard/support.
+        { id: '200', name: '200MB', code: '200', amount: 200,  network: 'MTN', validity: 'SME' },
+        { id: '500', name: '500MB', code: '500', amount: 500,  network: 'MTN', validity: 'SME' },
+        { id: '1000', name: '1GB',  code: '1000', amount: 1000, network: 'MTN', validity: 'SME' },
     ],
     airtel: [
-        { id: '100', name: '100MB', code: '100', amount: 50,   network: 'AIRTEL', validity: '1 day' },
-        { id: '101', name: '1GB',   code: '101', amount: 200,  network: 'AIRTEL', validity: '1 day' },
-        { id: '102', name: '1.5GB', code: '102', amount: 500,  network: 'AIRTEL', validity: '30 days' },
-        { id: '103', name: '3GB',   code: '103', amount: 1000, network: 'AIRTEL', validity: '30 days' },
-        { id: '104', name: '5GB',   code: '104', amount: 1500, network: 'AIRTEL', validity: '30 days' },
+        { id: '200', name: '200MB', code: '200', amount: 200,  network: 'AIRTEL', validity: 'SME' },
+        { id: '500', name: '500MB', code: '500', amount: 500,  network: 'AIRTEL', validity: 'SME' },
+        { id: '1000', name: '1GB',  code: '1000', amount: 1000, network: 'AIRTEL', validity: 'SME' },
     ],
     glo: [
-        { id: '200', name: '1GB',   code: '200', amount: 200,  network: 'GLO', validity: '1 day' },
-        { id: '201', name: '2GB',   code: '201', amount: 500,  network: 'GLO', validity: '30 days' },
-        { id: '202', name: '5GB',   code: '202', amount: 1500, network: 'GLO', validity: '30 days' },
-        { id: '203', name: '10GB',  code: '203', amount: 2500, network: 'GLO', validity: '30 days' },
+        { id: '200', name: '200MB', code: '200', amount: 200,  network: 'GLO', validity: '14 days' },
+        { id: '500', name: '500MB', code: '500', amount: 500,  network: 'GLO', validity: '7 days' },
+        { id: '1000', name: '1GB',  code: '1000', amount: 1000, network: 'GLO', validity: 'SME' },
+        { id: '2000', name: '2GB',  code: '2000', amount: 2000, network: 'GLO', validity: 'SME' },
     ],
     '9mobile': [
-        { id: '300', name: '1GB',  code: '300', amount: 300,  network: '9MOBILE', validity: '30 days' },
-        { id: '301', name: '2GB',  code: '301', amount: 500,  network: '9MOBILE', validity: '30 days' },
-        { id: '302', name: '5GB',  code: '302', amount: 1500, network: '9MOBILE', validity: '30 days' },
+        { id: '200', name: '200MB', code: '200', amount: 200,  network: '9MOBILE', validity: 'SME' },
+        { id: '500', name: '500MB', code: '500', amount: 500,  network: '9MOBILE', validity: 'SME' },
+        { id: '1000', name: '1GB',  code: '1000', amount: 1000, network: '9MOBILE', validity: 'SME' },
     ],
 };
 
