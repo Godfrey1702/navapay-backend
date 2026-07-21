@@ -94,7 +94,8 @@ export async function purchaseAirtime(
 
         console.log('CLUBKONNECT RAW RESPONSE:', JSON.stringify(data));
 
-        if (data?.statuscode !== '100') {
+        const isSuccess = data?.statuscode === '100' || data?.status === 'ORDER_RECEIVED';
+        if (!isSuccess) {
             throw new Error(data?.status ?? 'Airtime purchase failed');
         }
 
@@ -126,7 +127,10 @@ export async function purchaseData(
 
         console.log('[clubkonnect.purchaseData] response:', JSON.stringify(data));
 
-        if (data?.statuscode !== '100') {
+        // Clubkonnect data endpoint returns statuscode:"" + status:"ORDER_RECEIVED" on success,
+        // not statuscode:"100" like the airtime endpoint.
+        const isSuccess = data?.statuscode === '100' || data?.status === 'ORDER_RECEIVED';
+        if (!isSuccess) {
             throw new Error(data?.status ?? 'Data purchase failed');
         }
 
