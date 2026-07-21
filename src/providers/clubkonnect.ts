@@ -7,18 +7,17 @@ const client = axios.create({
 });
 
 // ─── Network code mapping ────────────────────────────────────────────────────
-
-const NETWORK_CODES: Record<string, string> = {
-    mtn: '01',
-    glo: '02',
-    '9mobile': '03',
-    etisalat: '03',
-    t2mobile: '03',
-    airtel: '04',
-};
+// Confirmed via APIDatabundleNetworkV2.asp response: MTN=01, GLO=02, Etisalat/9mobile=03, Airtel=04
 
 function networkCode(network: string): string {
-    return NETWORK_CODES[network.toLowerCase()] ?? network;
+    const map: Record<string, string> = {
+        mtn: '01',
+        glo: '02',
+        '9mobile': '03',
+        etisalat: '03',
+        airtel: '04',
+    };
+    return map[network.toLowerCase()] ?? network;
 }
 
 // ─── Data plan type ──────────────────────────────────────────────────────────
@@ -32,33 +31,32 @@ export interface DataPlan {
     validity: string;
 }
 
-// Used as fallback when the live API is unreachable
-// Plan codes confirmed via live API probe against APIDatabundleV1.asp.
-// GLO codes 200 and 500 confirmed ORDER_RECEIVED.
-// MTN, Airtel, 9mobile codes TBD — fetch from Clubkonnect support or dashboard.
+// Plan codes confirmed via live probing against APIDatabundleV1.asp (July 2026).
+// Prices are our selling price (marked up from Clubkonnect wholesale cost).
+// Airtel codes are estimated — test before relying on them.
 const FALLBACK_PLANS: Record<string, DataPlan[]> = {
     mtn: [
-        // MTN codes not yet confirmed — purchases will return INVALID_DATAPLAN
-        // until real codes are obtained from Clubkonnect dashboard/support.
-        { id: '200', name: '200MB', code: '200', amount: 200,  network: 'MTN', validity: 'SME' },
-        { id: '500', name: '500MB', code: '500', amount: 500,  network: 'MTN', validity: 'SME' },
-        { id: '1000', name: '1GB',  code: '1000', amount: 1000, network: 'MTN', validity: 'SME' },
-    ],
-    airtel: [
-        { id: '200', name: '200MB', code: '200', amount: 200,  network: 'AIRTEL', validity: 'SME' },
-        { id: '500', name: '500MB', code: '500', amount: 500,  network: 'AIRTEL', validity: 'SME' },
-        { id: '1000', name: '1GB',  code: '1000', amount: 1000, network: 'AIRTEL', validity: 'SME' },
+        // Confirmed: code 500 → ORDER_RECEIVED "500 MB - Weekly (SME)", wholesale ₦307
+        { id: '500',  name: '500MB Weekly',  code: '500',  amount: 350,  network: 'MTN', validity: '7 days' },
+        // Confirmed: code 1000 → ORDER_RECEIVED "1 GB - Weekly (SME)", wholesale ₦410
+        { id: '1000', name: '1GB Weekly',    code: '1000', amount: 450,  network: 'MTN', validity: '7 days' },
     ],
     glo: [
-        { id: '200', name: '200MB', code: '200', amount: 200,  network: 'GLO', validity: '14 days' },
-        { id: '500', name: '500MB', code: '500', amount: 500,  network: 'GLO', validity: '7 days' },
-        { id: '1000', name: '1GB',  code: '1000', amount: 1000, network: 'GLO', validity: 'SME' },
-        { id: '2000', name: '2GB',  code: '2000', amount: 2000, network: 'GLO', validity: 'SME' },
+        // Confirmed: code 200 → ORDER_RECEIVED "200MB 14 days SME", wholesale ₦94
+        { id: '200',  name: '200MB',         code: '200',  amount: 100,  network: 'GLO', validity: '14 days' },
+        // Confirmed: code 500 → ORDER_RECEIVED "500MB 7 days SME", wholesale ₦230
+        { id: '500',  name: '500MB',         code: '500',  amount: 250,  network: 'GLO', validity: '7 days' },
     ],
     '9mobile': [
-        { id: '200', name: '200MB', code: '200', amount: 200,  network: '9MOBILE', validity: 'SME' },
-        { id: '500', name: '500MB', code: '500', amount: 500,  network: '9MOBILE', validity: 'SME' },
-        { id: '1000', name: '1GB',  code: '1000', amount: 1000, network: '9MOBILE', validity: 'SME' },
+        // Confirmed: code 500 → ORDER_RECEIVED "500 MB" (Etisalat), wholesale ₦246
+        { id: '500',  name: '500MB',         code: '500',  amount: 280,  network: '9MOBILE', validity: '30 days' },
+        // Confirmed: code 1000 → ORDER_RECEIVED "1 GB" (Etisalat), wholesale ₦492
+        { id: '1000', name: '1GB',           code: '1000', amount: 550,  network: '9MOBILE', validity: '30 days' },
+    ],
+    airtel: [
+        // Estimated — not yet confirmed via live probe. Test before enabling for production.
+        { id: '500',  name: '500MB',         code: '500',  amount: 280,  network: 'AIRTEL', validity: '30 days' },
+        { id: '1000', name: '1GB',           code: '1000', amount: 450,  network: 'AIRTEL', validity: '30 days' },
     ],
 };
 
@@ -140,37 +138,11 @@ export async function purchaseData(
     }
 }
 
+// APIDatabundleNetworkV2.asp returns a network discount list, not individual plans.
+// No plan-listing endpoint exists on Clubkonnect — serve confirmed fallback plans directly.
 export async function getDataPlans(network: string): Promise<DataPlan[]> {
-    const code = networkCode(network);
-    const networkLabel = network.toUpperCase();
-
-    try {
-        const { data } = await client.get('/APIDatabundleNetworkV2.asp', {
-            params: {
-                UserID: env.CLUBKONNECT_USER_ID,
-                APIKey: env.CLUBKONNECT_API_KEY,
-                MobileNetwork: code,
-            },
-        });
-
-        console.log('[clubkonnect.getDataPlans] response:', JSON.stringify(data));
-
-        const raw: any[] = Array.isArray(data) ? data : [];
-        if (raw.length === 0) throw new Error('Empty plan list from API');
-
-        return raw.map((p) => ({
-            id:       String(p.DataPlan),
-            code:     String(p.DataPlan),
-            name:     p.DataVolume   ?? p.DataAllowance ?? 'Data Plan',
-            validity: p.DataValidity ?? '',
-            amount:   parseFloat(p.DataPrice ?? '0'),
-            network:  networkLabel,
-        }));
-    } catch (err: any) {
-        console.error('[clubkonnect.getDataPlans] live fetch failed — using fallback:', err.message);
-        const key = network.toLowerCase().replace(/\s/g, '');
-        return FALLBACK_PLANS[key] ?? [];
-    }
+    const key = network.toLowerCase().replace(/\s/g, '');
+    return FALLBACK_PLANS[key] ?? [];
 }
 
 export async function checkBalance(): Promise<number> {
