@@ -57,6 +57,7 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   ScheduledTopUp: 'ScheduledTopUp',
   ScheduledJobRun: 'ScheduledJobRun',
+  DataPlan: 'DataPlan',
   PhoneNumber: 'PhoneNumber'
 } as const
 
@@ -207,6 +208,22 @@ export const ScheduledJobRunScalarFieldEnum = {
 } as const
 
 export type ScheduledJobRunScalarFieldEnum = (typeof ScheduledJobRunScalarFieldEnum)[keyof typeof ScheduledJobRunScalarFieldEnum]
+
+
+export const DataPlanScalarFieldEnum = {
+  id: 'id',
+  network: 'network',
+  name: 'name',
+  code: 'code',
+  amount: 'amount',
+  validity: 'validity',
+  provider: 'provider',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DataPlanScalarFieldEnum = (typeof DataPlanScalarFieldEnum)[keyof typeof DataPlanScalarFieldEnum]
 
 
 export const PhoneNumberScalarFieldEnum = {

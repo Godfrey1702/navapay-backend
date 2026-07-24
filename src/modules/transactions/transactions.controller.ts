@@ -130,9 +130,12 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
 
 export async function getDataPlans(req: Request, res: Response, next: NextFunction) {
     try {
-        const network = String(req.params.network);
-        const plans = await clubkonnect.getDataPlans(network);
-        sendSuccess(res, plans, `Data plans for ${network.toUpperCase()}`);
+        const network = String(req.params.network).toUpperCase();
+        const plans = await prisma.dataPlan.findMany({
+            where: { network, isActive: true },
+            orderBy: { amount: 'asc' },
+        });
+        sendSuccess(res, plans, `Data plans for ${network}`);
     } catch (error) {
         next(error);
     }

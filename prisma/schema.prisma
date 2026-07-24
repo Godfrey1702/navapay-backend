@@ -161,6 +161,22 @@ model ScheduledJobRun {
   @@map("scheduled_job_runs")
 }
 
+model DataPlan {
+  id        String   @id @default(cuid())
+  network   String
+  name      String
+  code      String
+  amount    Float
+  validity  String
+  provider  String   @default("clubkonnect")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([network])
+  @@map("data_plans")
+}
+
 model PhoneNumber {
   id          String   @id @default(cuid())
   userId      String

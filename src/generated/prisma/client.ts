@@ -85,6 +85,11 @@ export type ScheduledTopUp = Prisma.ScheduledTopUpModel
  */
 export type ScheduledJobRun = Prisma.ScheduledJobRunModel
 /**
+ * Model DataPlan
+ * 
+ */
+export type DataPlan = Prisma.DataPlanModel
+/**
  * Model PhoneNumber
  * 
  */
