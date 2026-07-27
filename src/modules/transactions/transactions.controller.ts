@@ -87,15 +87,21 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
             return res.status(400).json({ success: false, message: 'Insufficient balance' });
         }
 
+        const plan = await prisma.dataPlan.findUnique({ where: { id: planId } });
+        if (!plan) {
+            return res.status(400).json({ success: false, message: 'Invalid data plan selected' });
+        }
+        const planCode = plan.code;
+
         const requestId = idempotencyKey || `DATA-${userId}-${Date.now()}`;
 
         console.log('DATA PURCHASE BODY:', req.body);
-        console.log('PLAN CODE BEING SENT:', planId);
-        console.log('PURCHASE REQUEST:', { phoneNumber, planId, amount, network, requestId });
+        console.log('PLAN CODE BEING SENT:', planCode);
+        console.log('PURCHASE REQUEST:', { phoneNumber, planCode, amount, network, requestId });
 
         let result: any;
         try {
-            result = await clubkonnect.purchaseData(phoneNumber, planId, network, requestId);
+            result = await clubkonnect.purchaseData(phoneNumber, planCode, network, requestId);
             console.log('CLUBKONNECT DATA RESPONSE:', JSON.stringify(result));
         } catch (err: any) {
             console.error('CLUBKONNECT DATA ERROR:', err.message);
@@ -116,9 +122,9 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
                 totalAmount: amount,
                 balanceSnapshot: Number(wallet.balance.toString()) - Number(amount),
                 reference: requestId,
-                description: `Data purchase - ${phoneNumber}`,
+                description: `Data purchase - ${plan.name} - ${phoneNumber}`,
                 status: 'SUCCESS',
-                metadata: { phoneNumber, network, planId, providerResponse: result },
+                metadata: { phoneNumber, network, planId, planCode, providerResponse: result },
             },
         });
 
