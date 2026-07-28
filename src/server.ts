@@ -3,6 +3,7 @@ import { env } from './config/index.js';
 import { logger } from './utils/logger.js';
 import { connectDatabase, disconnectDatabase } from './database/index.js';
 import { connectRedis, disconnectRedis } from './services/index.js';
+import { startScheduleRunner, stopScheduleRunner } from './jobs/scheduleRunner.js';
 import http from 'http';
 
 const server = http.createServer(app);
@@ -14,6 +15,9 @@ async function startServer(): Promise<void> {
 
         // Connect to Redis
         await connectRedis();
+
+        // Start the scheduled top-up polling runner
+        startScheduleRunner();
 
         // Start HTTP server
         server.listen(env.PORT, () => {
@@ -36,6 +40,8 @@ async function startServer(): Promise<void> {
 // ─── Graceful Shutdown ──────────────────────────────────────────────────────
 async function gracefulShutdown(signal: string): Promise<void> {
     logger.info({ signal }, 'Received shutdown signal, starting graceful shutdown...');
+
+    stopScheduleRunner();
 
     server.close(async () => {
         logger.info('HTTP server closed');

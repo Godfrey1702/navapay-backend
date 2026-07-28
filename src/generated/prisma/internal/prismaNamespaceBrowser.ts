@@ -56,7 +56,6 @@ export const ModelName = {
   Notification: 'Notification',
   AuditLog: 'AuditLog',
   ScheduledTopUp: 'ScheduledTopUp',
-  ScheduledJobRun: 'ScheduledJobRun',
   DataPlan: 'DataPlan',
   PhoneNumber: 'PhoneNumber'
 } as const
@@ -177,14 +176,16 @@ export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typ
 export const ScheduledTopUpScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  type: 'type',
+  serviceType: 'serviceType',
   phoneNumber: 'phoneNumber',
   network: 'network',
-  amount: 'amount',
   planId: 'planId',
+  amount: 'amount',
   frequency: 'frequency',
-  scheduledTime: 'scheduledTime',
-  scheduledDay: 'scheduledDay',
+  dayOfWeek: 'dayOfWeek',
+  dayOfMonth: 'dayOfMonth',
+  timeOfDay: 'timeOfDay',
+  label: 'label',
   status: 'status',
   nextRunAt: 'nextRunAt',
   lastRunAt: 'lastRunAt',
@@ -193,21 +194,6 @@ export const ScheduledTopUpScalarFieldEnum = {
 } as const
 
 export type ScheduledTopUpScalarFieldEnum = (typeof ScheduledTopUpScalarFieldEnum)[keyof typeof ScheduledTopUpScalarFieldEnum]
-
-
-export const ScheduledJobRunScalarFieldEnum = {
-  id: 'id',
-  scheduleId: 'scheduleId',
-  runAt: 'runAt',
-  status: 'status',
-  attempts: 'attempts',
-  error: 'error',
-  transactionId: 'transactionId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ScheduledJobRunScalarFieldEnum = (typeof ScheduledJobRunScalarFieldEnum)[keyof typeof ScheduledJobRunScalarFieldEnum]
 
 
 export const DataPlanScalarFieldEnum = {

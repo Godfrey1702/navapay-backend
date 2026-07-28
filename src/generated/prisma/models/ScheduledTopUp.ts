@@ -27,26 +27,28 @@ export type AggregateScheduledTopUp = {
 }
 
 export type ScheduledTopUpAvgAggregateOutputType = {
-  amount: number | null
-  scheduledDay: number | null
+  amount: runtime.Decimal | null
+  dayOfMonth: number | null
 }
 
 export type ScheduledTopUpSumAggregateOutputType = {
-  amount: number | null
-  scheduledDay: number | null
+  amount: runtime.Decimal | null
+  dayOfMonth: number | null
 }
 
 export type ScheduledTopUpMinAggregateOutputType = {
   id: string | null
   userId: string | null
-  type: string | null
+  serviceType: string | null
   phoneNumber: string | null
   network: string | null
-  amount: number | null
   planId: string | null
+  amount: runtime.Decimal | null
   frequency: string | null
-  scheduledTime: string | null
-  scheduledDay: number | null
+  dayOfWeek: string | null
+  dayOfMonth: number | null
+  timeOfDay: string | null
+  label: string | null
   status: string | null
   nextRunAt: Date | null
   lastRunAt: Date | null
@@ -57,14 +59,16 @@ export type ScheduledTopUpMinAggregateOutputType = {
 export type ScheduledTopUpMaxAggregateOutputType = {
   id: string | null
   userId: string | null
-  type: string | null
+  serviceType: string | null
   phoneNumber: string | null
   network: string | null
-  amount: number | null
   planId: string | null
+  amount: runtime.Decimal | null
   frequency: string | null
-  scheduledTime: string | null
-  scheduledDay: number | null
+  dayOfWeek: string | null
+  dayOfMonth: number | null
+  timeOfDay: string | null
+  label: string | null
   status: string | null
   nextRunAt: Date | null
   lastRunAt: Date | null
@@ -75,14 +79,16 @@ export type ScheduledTopUpMaxAggregateOutputType = {
 export type ScheduledTopUpCountAggregateOutputType = {
   id: number
   userId: number
-  type: number
+  serviceType: number
   phoneNumber: number
   network: number
-  amount: number
   planId: number
+  amount: number
   frequency: number
-  scheduledTime: number
-  scheduledDay: number
+  dayOfWeek: number
+  dayOfMonth: number
+  timeOfDay: number
+  label: number
   status: number
   nextRunAt: number
   lastRunAt: number
@@ -94,25 +100,27 @@ export type ScheduledTopUpCountAggregateOutputType = {
 
 export type ScheduledTopUpAvgAggregateInputType = {
   amount?: true
-  scheduledDay?: true
+  dayOfMonth?: true
 }
 
 export type ScheduledTopUpSumAggregateInputType = {
   amount?: true
-  scheduledDay?: true
+  dayOfMonth?: true
 }
 
 export type ScheduledTopUpMinAggregateInputType = {
   id?: true
   userId?: true
-  type?: true
+  serviceType?: true
   phoneNumber?: true
   network?: true
-  amount?: true
   planId?: true
+  amount?: true
   frequency?: true
-  scheduledTime?: true
-  scheduledDay?: true
+  dayOfWeek?: true
+  dayOfMonth?: true
+  timeOfDay?: true
+  label?: true
   status?: true
   nextRunAt?: true
   lastRunAt?: true
@@ -123,14 +131,16 @@ export type ScheduledTopUpMinAggregateInputType = {
 export type ScheduledTopUpMaxAggregateInputType = {
   id?: true
   userId?: true
-  type?: true
+  serviceType?: true
   phoneNumber?: true
   network?: true
-  amount?: true
   planId?: true
+  amount?: true
   frequency?: true
-  scheduledTime?: true
-  scheduledDay?: true
+  dayOfWeek?: true
+  dayOfMonth?: true
+  timeOfDay?: true
+  label?: true
   status?: true
   nextRunAt?: true
   lastRunAt?: true
@@ -141,14 +151,16 @@ export type ScheduledTopUpMaxAggregateInputType = {
 export type ScheduledTopUpCountAggregateInputType = {
   id?: true
   userId?: true
-  type?: true
+  serviceType?: true
   phoneNumber?: true
   network?: true
-  amount?: true
   planId?: true
+  amount?: true
   frequency?: true
-  scheduledTime?: true
-  scheduledDay?: true
+  dayOfWeek?: true
+  dayOfMonth?: true
+  timeOfDay?: true
+  label?: true
   status?: true
   nextRunAt?: true
   lastRunAt?: true
@@ -246,16 +258,18 @@ export type ScheduledTopUpGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type ScheduledTopUpGroupByOutputType = {
   id: string
   userId: string
-  type: string
+  serviceType: string
   phoneNumber: string
   network: string
-  amount: number
   planId: string | null
+  amount: runtime.Decimal
   frequency: string
-  scheduledTime: string
-  scheduledDay: number | null
+  dayOfWeek: string | null
+  dayOfMonth: number | null
+  timeOfDay: string
+  label: string | null
   status: string
-  nextRunAt: Date
+  nextRunAt: Date | null
   lastRunAt: Date | null
   createdAt: Date
   updatedAt: Date
@@ -287,40 +301,42 @@ export type ScheduledTopUpWhereInput = {
   NOT?: Prisma.ScheduledTopUpWhereInput | Prisma.ScheduledTopUpWhereInput[]
   id?: Prisma.StringFilter<"ScheduledTopUp"> | string
   userId?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  type?: Prisma.StringFilter<"ScheduledTopUp"> | string
+  serviceType?: Prisma.StringFilter<"ScheduledTopUp"> | string
   phoneNumber?: Prisma.StringFilter<"ScheduledTopUp"> | string
   network?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  amount?: Prisma.FloatFilter<"ScheduledTopUp"> | number
   planId?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
+  amount?: Prisma.DecimalFilter<"ScheduledTopUp"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  scheduledTime?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  scheduledDay?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  dayOfWeek?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
+  dayOfMonth?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  timeOfDay?: Prisma.StringFilter<"ScheduledTopUp"> | string
+  label?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
   status?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  nextRunAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
+  nextRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   lastRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
-  runs?: Prisma.ScheduledJobRunListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type ScheduledTopUpOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  serviceType?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   network?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   planId?: Prisma.SortOrderInput | Prisma.SortOrder
+  amount?: Prisma.SortOrder
   frequency?: Prisma.SortOrder
-  scheduledTime?: Prisma.SortOrder
-  scheduledDay?: Prisma.SortOrderInput | Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrderInput | Prisma.SortOrder
+  dayOfMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  timeOfDay?: Prisma.SortOrder
+  label?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  nextRunAt?: Prisma.SortOrder
+  nextRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
   lastRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  runs?: Prisma.ScheduledJobRunOrderByRelationAggregateInput
   user?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -330,36 +346,39 @@ export type ScheduledTopUpWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ScheduledTopUpWhereInput[]
   NOT?: Prisma.ScheduledTopUpWhereInput | Prisma.ScheduledTopUpWhereInput[]
   userId?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  type?: Prisma.StringFilter<"ScheduledTopUp"> | string
+  serviceType?: Prisma.StringFilter<"ScheduledTopUp"> | string
   phoneNumber?: Prisma.StringFilter<"ScheduledTopUp"> | string
   network?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  amount?: Prisma.FloatFilter<"ScheduledTopUp"> | number
   planId?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
+  amount?: Prisma.DecimalFilter<"ScheduledTopUp"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  scheduledTime?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  scheduledDay?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  dayOfWeek?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
+  dayOfMonth?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  timeOfDay?: Prisma.StringFilter<"ScheduledTopUp"> | string
+  label?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
   status?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  nextRunAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
+  nextRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   lastRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
-  runs?: Prisma.ScheduledJobRunListRelationFilter
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type ScheduledTopUpOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  serviceType?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   network?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   planId?: Prisma.SortOrderInput | Prisma.SortOrder
+  amount?: Prisma.SortOrder
   frequency?: Prisma.SortOrder
-  scheduledTime?: Prisma.SortOrder
-  scheduledDay?: Prisma.SortOrderInput | Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrderInput | Prisma.SortOrder
+  dayOfMonth?: Prisma.SortOrderInput | Prisma.SortOrder
+  timeOfDay?: Prisma.SortOrder
+  label?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
-  nextRunAt?: Prisma.SortOrder
+  nextRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
   lastRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -376,16 +395,18 @@ export type ScheduledTopUpScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ScheduledTopUpScalarWhereWithAggregatesInput | Prisma.ScheduledTopUpScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
   userId?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
-  type?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
+  serviceType?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
   phoneNumber?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
   network?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
-  amount?: Prisma.FloatWithAggregatesFilter<"ScheduledTopUp"> | number
   planId?: Prisma.StringNullableWithAggregatesFilter<"ScheduledTopUp"> | string | null
+  amount?: Prisma.DecimalWithAggregatesFilter<"ScheduledTopUp"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
-  scheduledTime?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
-  scheduledDay?: Prisma.IntNullableWithAggregatesFilter<"ScheduledTopUp"> | number | null
+  dayOfWeek?: Prisma.StringNullableWithAggregatesFilter<"ScheduledTopUp"> | string | null
+  dayOfMonth?: Prisma.IntNullableWithAggregatesFilter<"ScheduledTopUp"> | number | null
+  timeOfDay?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
+  label?: Prisma.StringNullableWithAggregatesFilter<"ScheduledTopUp"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
-  nextRunAt?: Prisma.DateTimeWithAggregatesFilter<"ScheduledTopUp"> | Date | string
+  nextRunAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ScheduledTopUp"> | Date | string | null
   lastRunAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ScheduledTopUp"> | Date | string
@@ -393,93 +414,99 @@ export type ScheduledTopUpScalarWhereWithAggregatesInput = {
 
 export type ScheduledTopUpCreateInput = {
   id?: string
-  type: string
+  serviceType: string
   phoneNumber: string
   network: string
-  amount: number
   planId?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency: string
-  scheduledTime: string
-  scheduledDay?: number | null
+  dayOfWeek?: string | null
+  dayOfMonth?: number | null
+  timeOfDay: string
+  label?: string | null
   status?: string
-  nextRunAt: Date | string
+  nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  runs?: Prisma.ScheduledJobRunCreateNestedManyWithoutScheduleInput
   user: Prisma.UserCreateNestedOneWithoutScheduledTopUpsInput
 }
 
 export type ScheduledTopUpUncheckedCreateInput = {
   id?: string
   userId: string
-  type: string
+  serviceType: string
   phoneNumber: string
   network: string
-  amount: number
   planId?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency: string
-  scheduledTime: string
-  scheduledDay?: number | null
+  dayOfWeek?: string | null
+  dayOfMonth?: number | null
+  timeOfDay: string
+  label?: string | null
   status?: string
-  nextRunAt: Date | string
+  nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  runs?: Prisma.ScheduledJobRunUncheckedCreateNestedManyWithoutScheduleInput
 }
 
 export type ScheduledTopUpUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dayOfWeek?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  runs?: Prisma.ScheduledJobRunUpdateManyWithoutScheduleNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutScheduledTopUpsNestedInput
 }
 
 export type ScheduledTopUpUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dayOfWeek?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  runs?: Prisma.ScheduledJobRunUncheckedUpdateManyWithoutScheduleNestedInput
 }
 
 export type ScheduledTopUpCreateManyInput = {
   id?: string
   userId: string
-  type: string
+  serviceType: string
   phoneNumber: string
   network: string
-  amount: number
   planId?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency: string
-  scheduledTime: string
-  scheduledDay?: number | null
+  dayOfWeek?: string | null
+  dayOfMonth?: number | null
+  timeOfDay: string
+  label?: string | null
   status?: string
-  nextRunAt: Date | string
+  nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -487,16 +514,18 @@ export type ScheduledTopUpCreateManyInput = {
 
 export type ScheduledTopUpUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dayOfWeek?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -505,16 +534,18 @@ export type ScheduledTopUpUpdateManyMutationInput = {
 export type ScheduledTopUpUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dayOfWeek?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -533,14 +564,16 @@ export type ScheduledTopUpOrderByRelationAggregateInput = {
 export type ScheduledTopUpCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  serviceType?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   network?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
   frequency?: Prisma.SortOrder
-  scheduledTime?: Prisma.SortOrder
-  scheduledDay?: Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  dayOfMonth?: Prisma.SortOrder
+  timeOfDay?: Prisma.SortOrder
+  label?: Prisma.SortOrder
   status?: Prisma.SortOrder
   nextRunAt?: Prisma.SortOrder
   lastRunAt?: Prisma.SortOrder
@@ -550,20 +583,22 @@ export type ScheduledTopUpCountOrderByAggregateInput = {
 
 export type ScheduledTopUpAvgOrderByAggregateInput = {
   amount?: Prisma.SortOrder
-  scheduledDay?: Prisma.SortOrder
+  dayOfMonth?: Prisma.SortOrder
 }
 
 export type ScheduledTopUpMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  serviceType?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   network?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
   frequency?: Prisma.SortOrder
-  scheduledTime?: Prisma.SortOrder
-  scheduledDay?: Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  dayOfMonth?: Prisma.SortOrder
+  timeOfDay?: Prisma.SortOrder
+  label?: Prisma.SortOrder
   status?: Prisma.SortOrder
   nextRunAt?: Prisma.SortOrder
   lastRunAt?: Prisma.SortOrder
@@ -574,14 +609,16 @@ export type ScheduledTopUpMaxOrderByAggregateInput = {
 export type ScheduledTopUpMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  serviceType?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   network?: Prisma.SortOrder
-  amount?: Prisma.SortOrder
   planId?: Prisma.SortOrder
+  amount?: Prisma.SortOrder
   frequency?: Prisma.SortOrder
-  scheduledTime?: Prisma.SortOrder
-  scheduledDay?: Prisma.SortOrder
+  dayOfWeek?: Prisma.SortOrder
+  dayOfMonth?: Prisma.SortOrder
+  timeOfDay?: Prisma.SortOrder
+  label?: Prisma.SortOrder
   status?: Prisma.SortOrder
   nextRunAt?: Prisma.SortOrder
   lastRunAt?: Prisma.SortOrder
@@ -591,12 +628,7 @@ export type ScheduledTopUpMinOrderByAggregateInput = {
 
 export type ScheduledTopUpSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
-  scheduledDay?: Prisma.SortOrder
-}
-
-export type ScheduledTopUpScalarRelationFilter = {
-  is?: Prisma.ScheduledTopUpWhereInput
-  isNot?: Prisma.ScheduledTopUpWhereInput
+  dayOfMonth?: Prisma.SortOrder
 }
 
 export type ScheduledTopUpCreateNestedManyWithoutUserInput = {
@@ -641,14 +673,6 @@ export type ScheduledTopUpUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.ScheduledTopUpScalarWhereInput | Prisma.ScheduledTopUpScalarWhereInput[]
 }
 
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type NullableIntFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -657,54 +681,42 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type ScheduledTopUpCreateNestedOneWithoutRunsInput = {
-  create?: Prisma.XOR<Prisma.ScheduledTopUpCreateWithoutRunsInput, Prisma.ScheduledTopUpUncheckedCreateWithoutRunsInput>
-  connectOrCreate?: Prisma.ScheduledTopUpCreateOrConnectWithoutRunsInput
-  connect?: Prisma.ScheduledTopUpWhereUniqueInput
-}
-
-export type ScheduledTopUpUpdateOneRequiredWithoutRunsNestedInput = {
-  create?: Prisma.XOR<Prisma.ScheduledTopUpCreateWithoutRunsInput, Prisma.ScheduledTopUpUncheckedCreateWithoutRunsInput>
-  connectOrCreate?: Prisma.ScheduledTopUpCreateOrConnectWithoutRunsInput
-  upsert?: Prisma.ScheduledTopUpUpsertWithoutRunsInput
-  connect?: Prisma.ScheduledTopUpWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ScheduledTopUpUpdateToOneWithWhereWithoutRunsInput, Prisma.ScheduledTopUpUpdateWithoutRunsInput>, Prisma.ScheduledTopUpUncheckedUpdateWithoutRunsInput>
-}
-
 export type ScheduledTopUpCreateWithoutUserInput = {
   id?: string
-  type: string
+  serviceType: string
   phoneNumber: string
   network: string
-  amount: number
   planId?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency: string
-  scheduledTime: string
-  scheduledDay?: number | null
+  dayOfWeek?: string | null
+  dayOfMonth?: number | null
+  timeOfDay: string
+  label?: string | null
   status?: string
-  nextRunAt: Date | string
+  nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  runs?: Prisma.ScheduledJobRunCreateNestedManyWithoutScheduleInput
 }
 
 export type ScheduledTopUpUncheckedCreateWithoutUserInput = {
   id?: string
-  type: string
+  serviceType: string
   phoneNumber: string
   network: string
-  amount: number
   planId?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency: string
-  scheduledTime: string
-  scheduledDay?: number | null
+  dayOfWeek?: string | null
+  dayOfMonth?: number | null
+  timeOfDay: string
+  label?: string | null
   status?: string
-  nextRunAt: Date | string
+  nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  runs?: Prisma.ScheduledJobRunUncheckedCreateNestedManyWithoutScheduleInput
 }
 
 export type ScheduledTopUpCreateOrConnectWithoutUserInput = {
@@ -739,121 +751,37 @@ export type ScheduledTopUpScalarWhereInput = {
   NOT?: Prisma.ScheduledTopUpScalarWhereInput | Prisma.ScheduledTopUpScalarWhereInput[]
   id?: Prisma.StringFilter<"ScheduledTopUp"> | string
   userId?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  type?: Prisma.StringFilter<"ScheduledTopUp"> | string
+  serviceType?: Prisma.StringFilter<"ScheduledTopUp"> | string
   phoneNumber?: Prisma.StringFilter<"ScheduledTopUp"> | string
   network?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  amount?: Prisma.FloatFilter<"ScheduledTopUp"> | number
   planId?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
+  amount?: Prisma.DecimalFilter<"ScheduledTopUp"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  scheduledTime?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  scheduledDay?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  dayOfWeek?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
+  dayOfMonth?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  timeOfDay?: Prisma.StringFilter<"ScheduledTopUp"> | string
+  label?: Prisma.StringNullableFilter<"ScheduledTopUp"> | string | null
   status?: Prisma.StringFilter<"ScheduledTopUp"> | string
-  nextRunAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
+  nextRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   lastRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
 }
 
-export type ScheduledTopUpCreateWithoutRunsInput = {
-  id?: string
-  type: string
-  phoneNumber: string
-  network: string
-  amount: number
-  planId?: string | null
-  frequency: string
-  scheduledTime: string
-  scheduledDay?: number | null
-  status?: string
-  nextRunAt: Date | string
-  lastRunAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutScheduledTopUpsInput
-}
-
-export type ScheduledTopUpUncheckedCreateWithoutRunsInput = {
-  id?: string
-  userId: string
-  type: string
-  phoneNumber: string
-  network: string
-  amount: number
-  planId?: string | null
-  frequency: string
-  scheduledTime: string
-  scheduledDay?: number | null
-  status?: string
-  nextRunAt: Date | string
-  lastRunAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type ScheduledTopUpCreateOrConnectWithoutRunsInput = {
-  where: Prisma.ScheduledTopUpWhereUniqueInput
-  create: Prisma.XOR<Prisma.ScheduledTopUpCreateWithoutRunsInput, Prisma.ScheduledTopUpUncheckedCreateWithoutRunsInput>
-}
-
-export type ScheduledTopUpUpsertWithoutRunsInput = {
-  update: Prisma.XOR<Prisma.ScheduledTopUpUpdateWithoutRunsInput, Prisma.ScheduledTopUpUncheckedUpdateWithoutRunsInput>
-  create: Prisma.XOR<Prisma.ScheduledTopUpCreateWithoutRunsInput, Prisma.ScheduledTopUpUncheckedCreateWithoutRunsInput>
-  where?: Prisma.ScheduledTopUpWhereInput
-}
-
-export type ScheduledTopUpUpdateToOneWithWhereWithoutRunsInput = {
-  where?: Prisma.ScheduledTopUpWhereInput
-  data: Prisma.XOR<Prisma.ScheduledTopUpUpdateWithoutRunsInput, Prisma.ScheduledTopUpUncheckedUpdateWithoutRunsInput>
-}
-
-export type ScheduledTopUpUpdateWithoutRunsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutScheduledTopUpsNestedInput
-}
-
-export type ScheduledTopUpUncheckedUpdateWithoutRunsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
-  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
-  planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
 export type ScheduledTopUpCreateManyUserInput = {
   id?: string
-  type: string
+  serviceType: string
   phoneNumber: string
   network: string
-  amount: number
   planId?: string | null
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency: string
-  scheduledTime: string
-  scheduledDay?: number | null
+  dayOfWeek?: string | null
+  dayOfMonth?: number | null
+  timeOfDay: string
+  label?: string | null
   status?: string
-  nextRunAt: Date | string
+  nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -861,120 +789,97 @@ export type ScheduledTopUpCreateManyUserInput = {
 
 export type ScheduledTopUpUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dayOfWeek?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  runs?: Prisma.ScheduledJobRunUpdateManyWithoutScheduleNestedInput
 }
 
 export type ScheduledTopUpUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dayOfWeek?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  runs?: Prisma.ScheduledJobRunUncheckedUpdateManyWithoutScheduleNestedInput
 }
 
 export type ScheduledTopUpUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  type?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceType?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   network?: Prisma.StringFieldUpdateOperationsInput | string
-  amount?: Prisma.FloatFieldUpdateOperationsInput | number
   planId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   frequency?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledTime?: Prisma.StringFieldUpdateOperationsInput | string
-  scheduledDay?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dayOfWeek?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dayOfMonth?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  timeOfDay?: Prisma.StringFieldUpdateOperationsInput | string
+  label?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
-  nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-
-/**
- * Count Type ScheduledTopUpCountOutputType
- */
-
-export type ScheduledTopUpCountOutputType = {
-  runs: number
-}
-
-export type ScheduledTopUpCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  runs?: boolean | ScheduledTopUpCountOutputTypeCountRunsArgs
-}
-
-/**
- * ScheduledTopUpCountOutputType without action
- */
-export type ScheduledTopUpCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ScheduledTopUpCountOutputType
-   */
-  select?: Prisma.ScheduledTopUpCountOutputTypeSelect<ExtArgs> | null
-}
-
-/**
- * ScheduledTopUpCountOutputType without action
- */
-export type ScheduledTopUpCountOutputTypeCountRunsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ScheduledJobRunWhereInput
-}
 
 
 export type ScheduledTopUpSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  type?: boolean
+  serviceType?: boolean
   phoneNumber?: boolean
   network?: boolean
-  amount?: boolean
   planId?: boolean
+  amount?: boolean
   frequency?: boolean
-  scheduledTime?: boolean
-  scheduledDay?: boolean
+  dayOfWeek?: boolean
+  dayOfMonth?: boolean
+  timeOfDay?: boolean
+  label?: boolean
   status?: boolean
   nextRunAt?: boolean
   lastRunAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  runs?: boolean | Prisma.ScheduledTopUp$runsArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  _count?: boolean | Prisma.ScheduledTopUpCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduledTopUp"]>
 
 export type ScheduledTopUpSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  type?: boolean
+  serviceType?: boolean
   phoneNumber?: boolean
   network?: boolean
-  amount?: boolean
   planId?: boolean
+  amount?: boolean
   frequency?: boolean
-  scheduledTime?: boolean
-  scheduledDay?: boolean
+  dayOfWeek?: boolean
+  dayOfMonth?: boolean
+  timeOfDay?: boolean
+  label?: boolean
   status?: boolean
   nextRunAt?: boolean
   lastRunAt?: boolean
@@ -986,14 +891,16 @@ export type ScheduledTopUpSelectCreateManyAndReturn<ExtArgs extends runtime.Type
 export type ScheduledTopUpSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
-  type?: boolean
+  serviceType?: boolean
   phoneNumber?: boolean
   network?: boolean
-  amount?: boolean
   planId?: boolean
+  amount?: boolean
   frequency?: boolean
-  scheduledTime?: boolean
-  scheduledDay?: boolean
+  dayOfWeek?: boolean
+  dayOfMonth?: boolean
+  timeOfDay?: boolean
+  label?: boolean
   status?: boolean
   nextRunAt?: boolean
   lastRunAt?: boolean
@@ -1005,14 +912,16 @@ export type ScheduledTopUpSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
 export type ScheduledTopUpSelectScalar = {
   id?: boolean
   userId?: boolean
-  type?: boolean
+  serviceType?: boolean
   phoneNumber?: boolean
   network?: boolean
-  amount?: boolean
   planId?: boolean
+  amount?: boolean
   frequency?: boolean
-  scheduledTime?: boolean
-  scheduledDay?: boolean
+  dayOfWeek?: boolean
+  dayOfMonth?: boolean
+  timeOfDay?: boolean
+  label?: boolean
   status?: boolean
   nextRunAt?: boolean
   lastRunAt?: boolean
@@ -1020,11 +929,9 @@ export type ScheduledTopUpSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ScheduledTopUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "phoneNumber" | "network" | "amount" | "planId" | "frequency" | "scheduledTime" | "scheduledDay" | "status" | "nextRunAt" | "lastRunAt" | "createdAt" | "updatedAt", ExtArgs["result"]["scheduledTopUp"]>
+export type ScheduledTopUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "serviceType" | "phoneNumber" | "network" | "planId" | "amount" | "frequency" | "dayOfWeek" | "dayOfMonth" | "timeOfDay" | "label" | "status" | "nextRunAt" | "lastRunAt" | "createdAt" | "updatedAt", ExtArgs["result"]["scheduledTopUp"]>
 export type ScheduledTopUpInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  runs?: boolean | Prisma.ScheduledTopUp$runsArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  _count?: boolean | Prisma.ScheduledTopUpCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ScheduledTopUpIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1036,22 +943,23 @@ export type ScheduledTopUpIncludeUpdateManyAndReturn<ExtArgs extends runtime.Typ
 export type $ScheduledTopUpPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ScheduledTopUp"
   objects: {
-    runs: Prisma.$ScheduledJobRunPayload<ExtArgs>[]
     user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
-    type: string
+    serviceType: string
     phoneNumber: string
     network: string
-    amount: number
     planId: string | null
+    amount: runtime.Decimal
     frequency: string
-    scheduledTime: string
-    scheduledDay: number | null
+    dayOfWeek: string | null
+    dayOfMonth: number | null
+    timeOfDay: string
+    label: string | null
     status: string
-    nextRunAt: Date
+    nextRunAt: Date | null
     lastRunAt: Date | null
     createdAt: Date
     updatedAt: Date
@@ -1449,7 +1357,6 @@ readonly fields: ScheduledTopUpFieldRefs;
  */
 export interface Prisma__ScheduledTopUpClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  runs<T extends Prisma.ScheduledTopUp$runsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ScheduledTopUp$runsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScheduledJobRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1482,14 +1389,16 @@ export interface Prisma__ScheduledTopUpClient<T, Null = never, ExtArgs extends r
 export interface ScheduledTopUpFieldRefs {
   readonly id: Prisma.FieldRef<"ScheduledTopUp", 'String'>
   readonly userId: Prisma.FieldRef<"ScheduledTopUp", 'String'>
-  readonly type: Prisma.FieldRef<"ScheduledTopUp", 'String'>
+  readonly serviceType: Prisma.FieldRef<"ScheduledTopUp", 'String'>
   readonly phoneNumber: Prisma.FieldRef<"ScheduledTopUp", 'String'>
   readonly network: Prisma.FieldRef<"ScheduledTopUp", 'String'>
-  readonly amount: Prisma.FieldRef<"ScheduledTopUp", 'Float'>
   readonly planId: Prisma.FieldRef<"ScheduledTopUp", 'String'>
+  readonly amount: Prisma.FieldRef<"ScheduledTopUp", 'Decimal'>
   readonly frequency: Prisma.FieldRef<"ScheduledTopUp", 'String'>
-  readonly scheduledTime: Prisma.FieldRef<"ScheduledTopUp", 'String'>
-  readonly scheduledDay: Prisma.FieldRef<"ScheduledTopUp", 'Int'>
+  readonly dayOfWeek: Prisma.FieldRef<"ScheduledTopUp", 'String'>
+  readonly dayOfMonth: Prisma.FieldRef<"ScheduledTopUp", 'Int'>
+  readonly timeOfDay: Prisma.FieldRef<"ScheduledTopUp", 'String'>
+  readonly label: Prisma.FieldRef<"ScheduledTopUp", 'String'>
   readonly status: Prisma.FieldRef<"ScheduledTopUp", 'String'>
   readonly nextRunAt: Prisma.FieldRef<"ScheduledTopUp", 'DateTime'>
   readonly lastRunAt: Prisma.FieldRef<"ScheduledTopUp", 'DateTime'>
@@ -1888,30 +1797,6 @@ export type ScheduledTopUpDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many ScheduledTopUps to delete.
    */
   limit?: number
-}
-
-/**
- * ScheduledTopUp.runs
- */
-export type ScheduledTopUp$runsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ScheduledJobRun
-   */
-  select?: Prisma.ScheduledJobRunSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ScheduledJobRun
-   */
-  omit?: Prisma.ScheduledJobRunOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ScheduledJobRunInclude<ExtArgs> | null
-  where?: Prisma.ScheduledJobRunWhereInput
-  orderBy?: Prisma.ScheduledJobRunOrderByWithRelationInput | Prisma.ScheduledJobRunOrderByWithRelationInput[]
-  cursor?: Prisma.ScheduledJobRunWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ScheduledJobRunScalarFieldEnum | Prisma.ScheduledJobRunScalarFieldEnum[]
 }
 
 /**

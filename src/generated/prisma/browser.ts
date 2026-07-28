@@ -53,11 +53,6 @@ export type AuditLog = Prisma.AuditLogModel
  */
 export type ScheduledTopUp = Prisma.ScheduledTopUpModel
 /**
- * Model ScheduledJobRun
- * 
- */
-export type ScheduledJobRun = Prisma.ScheduledJobRunModel
-/**
  * Model DataPlan
  * 
  */

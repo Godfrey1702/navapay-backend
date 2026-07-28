@@ -124,41 +124,27 @@ model AuditLog {
 }
 
 model ScheduledTopUp {
-  id            String            @id @default(cuid())
-  userId        String
-  type          String
-  phoneNumber   String
-  network       String
-  amount        Float
-  planId        String?
-  frequency     String
-  scheduledTime String
-  scheduledDay  Int?
-  status        String            @default("active")
-  nextRunAt     DateTime
-  lastRunAt     DateTime?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  runs          ScheduledJobRun[]
-  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  serviceType String    @map("service_type") // AIRTIME | DATA | ELECTRICITY | CABLE
+  phoneNumber String    @map("phone_number")
+  network     String
+  planId      String?   @map("plan_id")
+  amount      Decimal   @db.Decimal(12, 2)
+  frequency   String // ONCE | DAILY | WEEKLY | MONTHLY
+  dayOfWeek   String?   @map("day_of_week") // MONDAY | TUESDAY etc
+  dayOfMonth  Int?      @map("day_of_month") // 1-28
+  timeOfDay   String    @map("time_of_day") // "09:00"
+  label       String?
+  status      String    @default("ACTIVE") // ACTIVE | PAUSED | COMPLETED | CANCELLED
+  nextRunAt   DateTime? @map("next_run_at")
+  lastRunAt   DateTime? @map("last_run_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  @@map("scheduled_topups")
-}
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model ScheduledJobRun {
-  id            String            @id @default(uuid())
-  scheduleId    String            @map("schedule_id")
-  runAt         DateTime          @map("run_at")
-  status        ScheduleRunStatus @default(PENDING)
-  attempts      Int               @default(0)
-  error         String?
-  transactionId String?           @map("transaction_id")
-  createdAt     DateTime          @default(now()) @map("created_at")
-  updatedAt     DateTime          @updatedAt @map("updated_at")
-  schedule      ScheduledTopUp    @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-
-  @@unique([scheduleId, runAt])
-  @@map("scheduled_job_runs")
+  @@map("scheduled_top_ups")
 }
 
 model DataPlan {
@@ -239,10 +225,3 @@ enum Frequency {
   MONTHLY
 }
 
-enum ScheduleRunStatus {
-  PENDING
-  PROCESSING
-  SUCCESS
-  FAILED
-  PAUSED
-}

@@ -9,13 +9,9 @@ const router = Router();
 // All schedule routes are protected
 router.use(protect);
 
-router.post('/', validate(createScheduleSchema), schedulesController.createSchedule);
 router.get('/', schedulesController.listSchedules);
-router.get('/:id', schedulesController.getSchedule);
+router.post('/', validate(createScheduleSchema), schedulesController.createSchedule);
 router.patch('/:id', validate(updateScheduleSchema), schedulesController.updateSchedule);
-router.patch('/:id/pause', schedulesController.pauseSchedule);
-router.patch('/:id/resume', schedulesController.resumeSchedule);
-router.post('/:id/run', schedulesController.runScheduleNow);
-router.get('/:id/runs', schedulesController.getRuns);
+router.delete('/:id', schedulesController.deleteSchedule);
 
 export default router;

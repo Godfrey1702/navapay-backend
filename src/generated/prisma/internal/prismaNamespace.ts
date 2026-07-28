@@ -397,7 +397,6 @@ export const ModelName = {
   Notification: 'Notification',
   AuditLog: 'AuditLog',
   ScheduledTopUp: 'ScheduledTopUp',
-  ScheduledJobRun: 'ScheduledJobRun',
   DataPlan: 'DataPlan',
   PhoneNumber: 'PhoneNumber'
 } as const
@@ -415,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "wallet" | "transaction" | "budget" | "notification" | "auditLog" | "scheduledTopUp" | "scheduledJobRun" | "dataPlan" | "phoneNumber"
+    modelProps: "user" | "wallet" | "transaction" | "budget" | "notification" | "auditLog" | "scheduledTopUp" | "dataPlan" | "phoneNumber"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -937,80 +936,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    ScheduledJobRun: {
-      payload: Prisma.$ScheduledJobRunPayload<ExtArgs>
-      fields: Prisma.ScheduledJobRunFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.ScheduledJobRunFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.ScheduledJobRunFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>
-        }
-        findFirst: {
-          args: Prisma.ScheduledJobRunFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.ScheduledJobRunFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>
-        }
-        findMany: {
-          args: Prisma.ScheduledJobRunFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>[]
-        }
-        create: {
-          args: Prisma.ScheduledJobRunCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>
-        }
-        createMany: {
-          args: Prisma.ScheduledJobRunCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.ScheduledJobRunCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>[]
-        }
-        delete: {
-          args: Prisma.ScheduledJobRunDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>
-        }
-        update: {
-          args: Prisma.ScheduledJobRunUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>
-        }
-        deleteMany: {
-          args: Prisma.ScheduledJobRunDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.ScheduledJobRunUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.ScheduledJobRunUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>[]
-        }
-        upsert: {
-          args: Prisma.ScheduledJobRunUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledJobRunPayload>
-        }
-        aggregate: {
-          args: Prisma.ScheduledJobRunAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateScheduledJobRun>
-        }
-        groupBy: {
-          args: Prisma.ScheduledJobRunGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ScheduledJobRunGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.ScheduledJobRunCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ScheduledJobRunCountAggregateOutputType> | number
-        }
-      }
-    }
     DataPlan: {
       payload: Prisma.$DataPlanPayload<ExtArgs>
       fields: Prisma.DataPlanFieldRefs
@@ -1298,14 +1223,16 @@ export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typ
 export const ScheduledTopUpScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  type: 'type',
+  serviceType: 'serviceType',
   phoneNumber: 'phoneNumber',
   network: 'network',
-  amount: 'amount',
   planId: 'planId',
+  amount: 'amount',
   frequency: 'frequency',
-  scheduledTime: 'scheduledTime',
-  scheduledDay: 'scheduledDay',
+  dayOfWeek: 'dayOfWeek',
+  dayOfMonth: 'dayOfMonth',
+  timeOfDay: 'timeOfDay',
+  label: 'label',
   status: 'status',
   nextRunAt: 'nextRunAt',
   lastRunAt: 'lastRunAt',
@@ -1314,21 +1241,6 @@ export const ScheduledTopUpScalarFieldEnum = {
 } as const
 
 export type ScheduledTopUpScalarFieldEnum = (typeof ScheduledTopUpScalarFieldEnum)[keyof typeof ScheduledTopUpScalarFieldEnum]
-
-
-export const ScheduledJobRunScalarFieldEnum = {
-  id: 'id',
-  scheduleId: 'scheduleId',
-  runAt: 'runAt',
-  status: 'status',
-  attempts: 'attempts',
-  error: 'error',
-  transactionId: 'transactionId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ScheduledJobRunScalarFieldEnum = (typeof ScheduledJobRunScalarFieldEnum)[keyof typeof ScheduledJobRunScalarFieldEnum]
 
 
 export const DataPlanScalarFieldEnum = {
@@ -1583,20 +1495,6 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
-
-/**
- * Reference to a field of type 'ScheduleRunStatus'
- */
-export type EnumScheduleRunStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScheduleRunStatus'>
-    
-
-
-/**
- * Reference to a field of type 'ScheduleRunStatus[]'
- */
-export type ListEnumScheduleRunStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScheduleRunStatus[]'>
-    
-
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1691,7 +1589,6 @@ export type GlobalOmitConfig = {
   notification?: Prisma.NotificationOmit
   auditLog?: Prisma.AuditLogOmit
   scheduledTopUp?: Prisma.ScheduledTopUpOmit
-  scheduledJobRun?: Prisma.ScheduledJobRunOmit
   dataPlan?: Prisma.DataPlanOmit
   phoneNumber?: Prisma.PhoneNumberOmit
 }

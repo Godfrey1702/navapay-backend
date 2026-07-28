@@ -75,14 +75,3 @@ export const Frequency = {
 } as const
 
 export type Frequency = (typeof Frequency)[keyof typeof Frequency]
-
-
-export const ScheduleRunStatus = {
-  PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
-  SUCCESS: 'SUCCESS',
-  FAILED: 'FAILED',
-  PAUSED: 'PAUSED'
-} as const
-
-export type ScheduleRunStatus = (typeof ScheduleRunStatus)[keyof typeof ScheduleRunStatus]
