@@ -20,6 +20,8 @@ model User {
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
   fullName        String?          @map("full_name")
+  passwordResetToken  String?      @map("password_reset_token")
+  passwordResetExpiry DateTime?    @map("password_reset_expiry")
   auditLogs       AuditLog[]
   budgets         Budget[]
   notifications   Notification[]
@@ -30,6 +32,7 @@ model User {
 
   @@index([email])
   @@index([phoneNumber])
+  @@index([passwordResetToken])
   @@map("users")
 }
 

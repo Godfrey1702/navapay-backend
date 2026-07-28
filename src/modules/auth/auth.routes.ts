@@ -4,6 +4,7 @@ import { validate } from '../../middleware/validate.js';
 import { loginSchema, registerSchema, refreshTokenSchema } from './auth.schema.js';
 import { strictRateLimiter } from '../../middleware/rateLimiter.js';
 import { protect } from '../../middleware/auth.js';
+import { forgotPassword, resetPassword } from './password-reset.controller.js';
 
 const router = Router();
 
@@ -13,7 +14,8 @@ router.use(strictRateLimiter);
 router.post('/register', validate(registerSchema), authController.register);
 router.post('/login', validate(loginSchema), authController.login);
 router.post('/logout', authController.logout);
-router.post('/forgot-password', authController.forgotPassword);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 // Refresh endpoint - validation optional as it might come from cookie
 router.post('/refresh', authController.refresh);

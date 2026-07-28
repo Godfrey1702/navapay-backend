@@ -38,6 +38,10 @@ const envSchema = z.object({
     CLUBKONNECT_USER_ID: z.string().optional().default(''),
     CLUBKONNECT_API_KEY: z.string().optional().default(''),
     CLUBKONNECT_BASE_URL: z.string().default('https://www.nellobytesystems.com'),
+
+    // Email — Resend
+    RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required'),
+    FRONTEND_URL: z.string().min(1, 'FRONTEND_URL is required'),
 });
 
 const parsed = envSchema.safeParse(process.env);
