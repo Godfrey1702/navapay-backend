@@ -11,6 +11,7 @@ import {
     rateLimiter,
 } from './middleware/index.js';
 import routes from './routes.js';
+import webhooksRouter from './modules/webhooks/webhooks.routes.js';
 import { NotFoundError } from './utils/errors.js';
 
 const app = express();
@@ -45,6 +46,10 @@ app.use(
         allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
     }),
 );
+
+// ─── Webhooks ───────────────────────────────────────────────────────────────
+// Must be mounted before express.json() — signature verification needs the raw body.
+app.use(`${env.API_PREFIX}/webhooks`, webhooksRouter);
 
 // ─── Parsing ────────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));

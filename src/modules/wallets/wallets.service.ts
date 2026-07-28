@@ -20,7 +20,12 @@ export async function initializeWalletPayment(userId: string, email: string, amo
 
     let result: any;
     try {
-        result = await paystackProvider.initializePayment({ email, amount, reference });
+        result = await paystackProvider.initializePayment({
+            email,
+            amount,
+            reference,
+            metadata: { userId },
+        });
         console.log('[initializeWalletPayment] Paystack response:', JSON.stringify(result, null, 2));
     } catch (err: any) {
         console.error('[initializeWalletPayment] Paystack error:', err?.response?.status, JSON.stringify(err?.response?.data ?? err?.message));

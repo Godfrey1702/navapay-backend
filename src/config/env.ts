@@ -32,7 +32,7 @@ const envSchema = z.object({
     // Payment provider settings
     PAYFLEX_API_KEY: z.string().optional().default(''),
     PAYFLEX_BASE_URL: z.string().default('https://api.payflex.com.ng/v1'),
-    PAYSTACK_SECRET_KEY: z.string().optional().default(''),
+    PAYSTACK_SECRET_KEY: z.string().min(1, 'PAYSTACK_SECRET_KEY is required'),
 
     // VTU provider — Clubkonnect (Nellobyte Systems)
     CLUBKONNECT_USER_ID: z.string().optional().default(''),

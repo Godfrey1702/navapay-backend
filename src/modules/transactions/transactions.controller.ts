@@ -5,11 +5,14 @@ import { UnauthorizedError } from '../../utils/errors.js';
 import * as clubkonnect from '../../providers/clubkonnect.js';
 import { prisma } from '../../database/prisma.js';
 
-export async function deposit(req: Request, res: Response, next: NextFunction) {
+// Admin-only: manually credit a wallet with no payment verification (support/refunds).
+// Regular wallet funding must go through Paystack — see wallets.controller.ts / the
+// Paystack webhook — which are payment-verified.
+export async function adminDeposit(req: Request, res: Response, next: NextFunction) {
     try {
         if (!req.user) throw new UnauthorizedError('User not authenticated');
 
-        const transaction = await transactionService.deposit(req.user.id, req.body);
+        const transaction = await transactionService.adminDeposit(req.user.id, req.body);
         sendSuccess(res, transaction, 'Wallet funded successfully', 201);
     } catch (error) {
         next(error);

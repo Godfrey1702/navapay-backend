@@ -11,9 +11,9 @@ import { CreateDepositInput, CreatePurchaseInput } from './transactions.schema.j
 import { logger } from '../../utils/logger.js';
 
 /**
- * Handle wallet funding (Deposit).
+ * Admin-only manual wallet credit — no payment verification. Support/refunds use only.
  */
-export async function deposit(userId: string, input: CreateDepositInput) {
+export async function adminDeposit(userId: string, input: CreateDepositInput) {
     return await withTransaction(async (tx) => {
         // 1. Get and lock wallet (simple find for now, usually we use queryRaw for FOR UPDATE)
         const wallet = await tx.wallet.findUnique({

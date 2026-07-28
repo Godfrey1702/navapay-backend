@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import * as transactionController from './transactions.controller.js';
-import { protect } from '../../middleware/auth.js';
+import { protect, restrictTo } from '../../middleware/auth.js';
 import { validate } from '../../middleware/validate.js';
 import { createDepositSchema, createPurchaseSchema } from './transactions.schema.js';
+import { UserRole } from '../../generated/prisma/enums.js';
 
 const router = Router();
 
@@ -12,7 +13,13 @@ router.get('/data-plans/:network', transactionController.getDataPlans);
 // All routes below require authentication
 router.use(protect);
 
-router.post('/deposit', validate(createDepositSchema), transactionController.deposit);
+// Admin-only: manual wallet credit with no payment verification (support/refunds).
+router.post(
+    '/deposit',
+    restrictTo(UserRole.ADMIN),
+    validate(createDepositSchema),
+    transactionController.adminDeposit,
+);
 router.post('/purchase', validate(createPurchaseSchema), transactionController.purchase);
 router.post('/airtime', transactionController.purchaseAirtime);
 router.post('/data', transactionController.purchaseData);
