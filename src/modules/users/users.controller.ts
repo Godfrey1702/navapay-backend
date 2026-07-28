@@ -42,12 +42,23 @@ export async function addPhoneNumber(req: Request, res: Response, next: NextFunc
     try {
         if (!req.user) throw new UnauthorizedError('User not authenticated');
 
-        const { phoneNumber, network, label, isDefault } = req.body;
+        const {
+            phoneNumber: phoneNumberCamel,
+            phone_number,
+            network,
+            network_provider,
+            label,
+            isDefault,
+        } = req.body;
+
+        const phoneNumber = phoneNumberCamel || phone_number;
+        const resolvedNetwork = network || network_provider;
+
         const data = await prisma.phoneNumber.create({
             data: {
                 userId: req.user!.id,
                 phoneNumber,
-                network,
+                network: resolvedNetwork,
                 label: label || null,
                 isDefault: isDefault || false,
                 isVerified: false,
