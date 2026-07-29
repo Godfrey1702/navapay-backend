@@ -44,6 +44,9 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
 export async function sendVerificationEmail(email: string, token: string) {
     const verifyUrl = `${env.FRONTEND_URL}/verify-email?token=${token}`;
 
+    // Always log in dev so we can test without Resend domain verification
+    console.log(`[DEV] Verification URL for ${email}: ${verifyUrl}`);
+
     await resend.emails.send({
         from: 'Navapay <onboarding@resend.dev>',
         // TEMPORARY: Resend sandbox mode only allows sending to the account owner's own
