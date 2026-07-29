@@ -5,6 +5,7 @@ import { loginSchema, registerSchema, refreshTokenSchema } from './auth.schema.j
 import { strictRateLimiter } from '../../middleware/rateLimiter.js';
 import { protect } from '../../middleware/auth.js';
 import { forgotPassword, resetPassword } from './password-reset.controller.js';
+import { verifyEmail, resendVerification } from './email-verification.controller.js';
 
 const router = Router();
 
@@ -16,6 +17,8 @@ router.post('/login', validate(loginSchema), authController.login);
 router.post('/logout', authController.logout);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
+router.get('/verify-email', verifyEmail);
+router.post('/resend-verification', resendVerification);
 
 // Refresh endpoint - validation optional as it might come from cookie
 router.post('/refresh', authController.refresh);

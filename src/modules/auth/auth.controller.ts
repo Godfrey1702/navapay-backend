@@ -18,10 +18,9 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     try {
         const result = await authService.register(req.body);
 
-        // Set refresh token in HTTP-only cookie
-        res.cookie('refreshToken', result.tokens.refreshToken, COOKIE_OPTIONS);
-
-        sendSuccess(res, { user: result.user, accessToken: result.tokens.accessToken }, 'Registration successful', 201);
+        // No tokens issued here — the account is unverified until the user clicks
+        // the link in their verification email, then logs in via /auth/login.
+        sendSuccess(res, { user: result.user }, 'Registration successful. Please check your email to verify your account.', 201);
     } catch (error) {
         next(error);
     }

@@ -22,6 +22,8 @@ model User {
   fullName        String?          @map("full_name")
   passwordResetToken  String?      @map("password_reset_token")
   passwordResetExpiry DateTime?    @map("password_reset_expiry")
+  emailVerificationToken  String?  @map("email_verification_token")
+  emailVerificationExpiry DateTime? @map("email_verification_expiry")
   auditLogs       AuditLog[]
   budgets         Budget[]
   notifications   Notification[]
@@ -33,6 +35,7 @@ model User {
   @@index([email])
   @@index([phoneNumber])
   @@index([passwordResetToken])
+  @@index([emailVerificationToken])
   @@map("users")
 }
 

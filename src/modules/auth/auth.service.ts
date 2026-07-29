@@ -1,15 +1,21 @@
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../../database/prisma.js';
 import { withTransaction } from '../../database/transaction.js';
 import { signAccessToken, signRefreshToken, verifyRefreshToken, TokenPayload } from '../../services/jwt.js';
-import { ConflictError, UnauthorizedError } from '../../utils/errors.js';
+import { AppError, ConflictError, UnauthorizedError } from '../../utils/errors.js';
 import { logger } from '../../utils/logger.js';
 import { LoginInput, RegisterInput } from './auth.schema.js';
+import { sendVerificationEmail } from '../../lib/email.js';
 
 const SALT_ROUNDS = 10;
+const VERIFICATION_TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 /**
  * Register a new user and create their wallet transactionally.
+ * The account starts unverified — no tokens are issued here. The user must
+ * verify their email (see email-verification.controller.ts) before they can
+ * log in; see the isEmailVerified check in login() below.
  */
 export async function register(input: RegisterInput) {
     const existingUser = await prisma.user.findFirst({
@@ -23,6 +29,8 @@ export async function register(input: RegisterInput) {
     }
 
     const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpiry = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
 
     // Transactionally Create User & Wallet
     const user = await withTransaction(async (tx) => {
@@ -35,6 +43,8 @@ export async function register(input: RegisterInput) {
                 phoneNumber: input.phoneNumber,
                 role: 'USER',
                 isActive: true,
+                emailVerificationToken: verificationToken,
+                emailVerificationExpiry: verificationExpiry,
             },
         });
 
@@ -53,7 +63,19 @@ export async function register(input: RegisterInput) {
 
     logger.info({ userId: user.id }, 'User registered successfully');
 
-    return generateAuthResponse(user);
+    // Don't await, don't fail registration if the email fails to send.
+    sendVerificationEmail(user.email, verificationToken).catch((err: unknown) =>
+        logger.error({ err, userId: user.id }, 'Failed to send verification email'),
+    );
+
+    return {
+        user: {
+            id: user.id,
+            email: user.email,
+            fullName: user.fullName,
+            role: user.role,
+        },
+    };
 }
 
 /**
@@ -72,6 +94,10 @@ export async function login(input: LoginInput) {
 
     if (!isValidPassword) {
         throw new UnauthorizedError('Invalid credentials');
+    }
+
+    if (!user.isEmailVerified) {
+        throw new AppError('Please verify your email before logging in.', 403, 'EMAIL_NOT_VERIFIED');
     }
 
     // Update last login timestamp asynchronously
