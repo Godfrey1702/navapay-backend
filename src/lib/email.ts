@@ -8,7 +8,9 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
 
     await resend.emails.send({
         from: 'Navapay <onboarding@resend.dev>',
-        to: email,
+        // TEMPORARY: Resend sandbox mode only allows sending to the account owner's own
+        // email until a domain is verified at resend.com/domains. Remove this once verified.
+        to: env.NODE_ENV === 'production' ? email : 'navapay4u@gmail.com',
         subject: 'Reset your Navapay password',
         html: `
             <div style="font-family: 'Poppins', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #ffffff;">
