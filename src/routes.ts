@@ -10,6 +10,7 @@ import { transactionsRoutes } from './modules/transactions/index.js';
 import { budgetsRoutes } from './modules/budgets/index.js';
 import { notificationsRoutes } from './modules/notifications/index.js';
 import { schedulesRoutes } from './modules/schedules/index.js';
+import pinRoutes from './modules/pin/pin.routes.js';
 import greetingRoutes from './modules/greeting/greeting.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
 
@@ -61,6 +62,7 @@ router.use('/transactions', transactionsRoutes);
 router.use('/budgets', budgetsRoutes);
 router.use('/notifications', notificationsRoutes);
 router.use('/schedules', schedulesRoutes);
+router.use('/pin', pinRoutes);
 router.use('/greeting', greetingRoutes);
 router.use('/admin', adminRoutes);
 

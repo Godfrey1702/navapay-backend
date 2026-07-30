@@ -91,7 +91,10 @@ export const UserScalarFieldEnum = {
   passwordResetToken: 'passwordResetToken',
   passwordResetExpiry: 'passwordResetExpiry',
   emailVerificationToken: 'emailVerificationToken',
-  emailVerificationExpiry: 'emailVerificationExpiry'
+  emailVerificationExpiry: 'emailVerificationExpiry',
+  transactionPin: 'transactionPin',
+  transactionPinResetToken: 'transactionPinResetToken',
+  transactionPinResetExpiry: 'transactionPinResetExpiry'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]

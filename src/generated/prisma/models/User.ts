@@ -40,6 +40,9 @@ export type UserMinAggregateOutputType = {
   passwordResetExpiry: Date | null
   emailVerificationToken: string | null
   emailVerificationExpiry: Date | null
+  transactionPin: string | null
+  transactionPinResetToken: string | null
+  transactionPinResetExpiry: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -58,6 +61,9 @@ export type UserMaxAggregateOutputType = {
   passwordResetExpiry: Date | null
   emailVerificationToken: string | null
   emailVerificationExpiry: Date | null
+  transactionPin: string | null
+  transactionPinResetToken: string | null
+  transactionPinResetExpiry: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -76,6 +82,9 @@ export type UserCountAggregateOutputType = {
   passwordResetExpiry: number
   emailVerificationToken: number
   emailVerificationExpiry: number
+  transactionPin: number
+  transactionPinResetToken: number
+  transactionPinResetExpiry: number
   _all: number
 }
 
@@ -96,6 +105,9 @@ export type UserMinAggregateInputType = {
   passwordResetExpiry?: true
   emailVerificationToken?: true
   emailVerificationExpiry?: true
+  transactionPin?: true
+  transactionPinResetToken?: true
+  transactionPinResetExpiry?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -114,6 +126,9 @@ export type UserMaxAggregateInputType = {
   passwordResetExpiry?: true
   emailVerificationToken?: true
   emailVerificationExpiry?: true
+  transactionPin?: true
+  transactionPinResetToken?: true
+  transactionPinResetExpiry?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -132,6 +147,9 @@ export type UserCountAggregateInputType = {
   passwordResetExpiry?: true
   emailVerificationToken?: true
   emailVerificationExpiry?: true
+  transactionPin?: true
+  transactionPinResetToken?: true
+  transactionPinResetExpiry?: true
   _all?: true
 }
 
@@ -223,6 +241,9 @@ export type UserGroupByOutputType = {
   passwordResetExpiry: Date | null
   emailVerificationToken: string | null
   emailVerificationExpiry: Date | null
+  transactionPin: string | null
+  transactionPinResetToken: string | null
+  transactionPinResetExpiry: Date | null
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -262,6 +283,9 @@ export type UserWhereInput = {
   passwordResetExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   emailVerificationToken?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerificationExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  transactionPin?: Prisma.StringNullableFilter<"User"> | string | null
+  transactionPinResetToken?: Prisma.StringNullableFilter<"User"> | string | null
+  transactionPinResetExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   auditLogs?: Prisma.AuditLogListRelationFilter
   budgets?: Prisma.BudgetListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
@@ -287,6 +311,9 @@ export type UserOrderByWithRelationInput = {
   passwordResetExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerificationToken?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerificationExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
+  transactionPin?: Prisma.SortOrderInput | Prisma.SortOrder
+  transactionPinResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  transactionPinResetExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
   budgets?: Prisma.BudgetOrderByRelationAggregateInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
@@ -315,6 +342,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   passwordResetExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   emailVerificationToken?: Prisma.StringNullableFilter<"User"> | string | null
   emailVerificationExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  transactionPin?: Prisma.StringNullableFilter<"User"> | string | null
+  transactionPinResetToken?: Prisma.StringNullableFilter<"User"> | string | null
+  transactionPinResetExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   auditLogs?: Prisma.AuditLogListRelationFilter
   budgets?: Prisma.BudgetListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
@@ -340,6 +370,9 @@ export type UserOrderByWithAggregationInput = {
   passwordResetExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerificationToken?: Prisma.SortOrderInput | Prisma.SortOrder
   emailVerificationExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
+  transactionPin?: Prisma.SortOrderInput | Prisma.SortOrder
+  transactionPinResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  transactionPinResetExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
@@ -364,6 +397,9 @@ export type UserScalarWhereWithAggregatesInput = {
   passwordResetExpiry?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   emailVerificationToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   emailVerificationExpiry?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  transactionPin?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  transactionPinResetToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  transactionPinResetExpiry?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -382,6 +418,9 @@ export type UserCreateInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
@@ -407,6 +446,9 @@ export type UserUncheckedCreateInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -432,6 +474,9 @@ export type UserUpdateInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
@@ -457,6 +502,9 @@ export type UserUncheckedUpdateInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -482,6 +530,9 @@ export type UserCreateManyInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -500,6 +551,9 @@ export type UserUpdateManyMutationInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -518,6 +572,9 @@ export type UserUncheckedUpdateManyInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -536,6 +593,9 @@ export type UserCountOrderByAggregateInput = {
   passwordResetExpiry?: Prisma.SortOrder
   emailVerificationToken?: Prisma.SortOrder
   emailVerificationExpiry?: Prisma.SortOrder
+  transactionPin?: Prisma.SortOrder
+  transactionPinResetToken?: Prisma.SortOrder
+  transactionPinResetExpiry?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -554,6 +614,9 @@ export type UserMaxOrderByAggregateInput = {
   passwordResetExpiry?: Prisma.SortOrder
   emailVerificationToken?: Prisma.SortOrder
   emailVerificationExpiry?: Prisma.SortOrder
+  transactionPin?: Prisma.SortOrder
+  transactionPinResetToken?: Prisma.SortOrder
+  transactionPinResetExpiry?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -572,6 +635,9 @@ export type UserMinOrderByAggregateInput = {
   passwordResetExpiry?: Prisma.SortOrder
   emailVerificationToken?: Prisma.SortOrder
   emailVerificationExpiry?: Prisma.SortOrder
+  transactionPin?: Prisma.SortOrder
+  transactionPinResetToken?: Prisma.SortOrder
+  transactionPinResetExpiry?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -724,6 +790,9 @@ export type UserCreateWithoutWalletInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
@@ -748,6 +817,9 @@ export type UserUncheckedCreateWithoutWalletInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -788,6 +860,9 @@ export type UserUpdateWithoutWalletInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
@@ -812,6 +887,9 @@ export type UserUncheckedUpdateWithoutWalletInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -836,6 +914,9 @@ export type UserCreateWithoutTransactionsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
@@ -860,6 +941,9 @@ export type UserUncheckedCreateWithoutTransactionsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -900,6 +984,9 @@ export type UserUpdateWithoutTransactionsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
@@ -924,6 +1011,9 @@ export type UserUncheckedUpdateWithoutTransactionsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -948,6 +1038,9 @@ export type UserCreateWithoutBudgetsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   phoneNumbers?: Prisma.PhoneNumberCreateNestedManyWithoutUserInput
@@ -972,6 +1065,9 @@ export type UserUncheckedCreateWithoutBudgetsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   phoneNumbers?: Prisma.PhoneNumberUncheckedCreateNestedManyWithoutUserInput
@@ -1012,6 +1108,9 @@ export type UserUpdateWithoutBudgetsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   phoneNumbers?: Prisma.PhoneNumberUpdateManyWithoutUserNestedInput
@@ -1036,6 +1135,9 @@ export type UserUncheckedUpdateWithoutBudgetsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   phoneNumbers?: Prisma.PhoneNumberUncheckedUpdateManyWithoutUserNestedInput
@@ -1060,6 +1162,9 @@ export type UserCreateWithoutNotificationsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
   phoneNumbers?: Prisma.PhoneNumberCreateNestedManyWithoutUserInput
@@ -1084,6 +1189,9 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
   phoneNumbers?: Prisma.PhoneNumberUncheckedCreateNestedManyWithoutUserInput
@@ -1124,6 +1232,9 @@ export type UserUpdateWithoutNotificationsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
   phoneNumbers?: Prisma.PhoneNumberUpdateManyWithoutUserNestedInput
@@ -1148,6 +1259,9 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
   phoneNumbers?: Prisma.PhoneNumberUncheckedUpdateManyWithoutUserNestedInput
@@ -1172,6 +1286,9 @@ export type UserCreateWithoutAuditLogsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   phoneNumbers?: Prisma.PhoneNumberCreateNestedManyWithoutUserInput
@@ -1196,6 +1313,9 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   phoneNumbers?: Prisma.PhoneNumberUncheckedCreateNestedManyWithoutUserInput
@@ -1236,6 +1356,9 @@ export type UserUpdateWithoutAuditLogsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   phoneNumbers?: Prisma.PhoneNumberUpdateManyWithoutUserNestedInput
@@ -1260,6 +1383,9 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   phoneNumbers?: Prisma.PhoneNumberUncheckedUpdateManyWithoutUserNestedInput
@@ -1284,6 +1410,9 @@ export type UserCreateWithoutScheduledTopUpsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
@@ -1308,6 +1437,9 @@ export type UserUncheckedCreateWithoutScheduledTopUpsInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1348,6 +1480,9 @@ export type UserUpdateWithoutScheduledTopUpsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
@@ -1372,6 +1507,9 @@ export type UserUncheckedUpdateWithoutScheduledTopUpsInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1396,6 +1534,9 @@ export type UserCreateWithoutPhoneNumbersInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
@@ -1420,6 +1561,9 @@ export type UserUncheckedCreateWithoutPhoneNumbersInput = {
   passwordResetExpiry?: Date | string | null
   emailVerificationToken?: string | null
   emailVerificationExpiry?: Date | string | null
+  transactionPin?: string | null
+  transactionPinResetToken?: string | null
+  transactionPinResetExpiry?: Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
   budgets?: Prisma.BudgetUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1460,6 +1604,9 @@ export type UserUpdateWithoutPhoneNumbersInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
@@ -1484,6 +1631,9 @@ export type UserUncheckedUpdateWithoutPhoneNumbersInput = {
   passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailVerificationToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   emailVerificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transactionPin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transactionPinResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
   budgets?: Prisma.BudgetUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1584,6 +1734,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordResetExpiry?: boolean
   emailVerificationToken?: boolean
   emailVerificationExpiry?: boolean
+  transactionPin?: boolean
+  transactionPinResetToken?: boolean
+  transactionPinResetExpiry?: boolean
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
   budgets?: boolean | Prisma.User$budgetsArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
@@ -1610,6 +1763,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordResetExpiry?: boolean
   emailVerificationToken?: boolean
   emailVerificationExpiry?: boolean
+  transactionPin?: boolean
+  transactionPinResetToken?: boolean
+  transactionPinResetExpiry?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1628,6 +1784,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordResetExpiry?: boolean
   emailVerificationToken?: boolean
   emailVerificationExpiry?: boolean
+  transactionPin?: boolean
+  transactionPinResetToken?: boolean
+  transactionPinResetExpiry?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -1646,9 +1805,12 @@ export type UserSelectScalar = {
   passwordResetExpiry?: boolean
   emailVerificationToken?: boolean
   emailVerificationExpiry?: boolean
+  transactionPin?: boolean
+  transactionPinResetToken?: boolean
+  transactionPinResetExpiry?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "phoneNumber" | "role" | "isEmailVerified" | "isActive" | "lastLoginAt" | "createdAt" | "updatedAt" | "fullName" | "passwordResetToken" | "passwordResetExpiry" | "emailVerificationToken" | "emailVerificationExpiry", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "passwordHash" | "phoneNumber" | "role" | "isEmailVerified" | "isActive" | "lastLoginAt" | "createdAt" | "updatedAt" | "fullName" | "passwordResetToken" | "passwordResetExpiry" | "emailVerificationToken" | "emailVerificationExpiry" | "transactionPin" | "transactionPinResetToken" | "transactionPinResetExpiry", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
   budgets?: boolean | Prisma.User$budgetsArgs<ExtArgs>
@@ -1689,6 +1851,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     passwordResetExpiry: Date | null
     emailVerificationToken: string | null
     emailVerificationExpiry: Date | null
+    transactionPin: string | null
+    transactionPinResetToken: string | null
+    transactionPinResetExpiry: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -2134,6 +2299,9 @@ export interface UserFieldRefs {
   readonly passwordResetExpiry: Prisma.FieldRef<"User", 'DateTime'>
   readonly emailVerificationToken: Prisma.FieldRef<"User", 'String'>
   readonly emailVerificationExpiry: Prisma.FieldRef<"User", 'DateTime'>
+  readonly transactionPin: Prisma.FieldRef<"User", 'String'>
+  readonly transactionPinResetToken: Prisma.FieldRef<"User", 'String'>
+  readonly transactionPinResetExpiry: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 
