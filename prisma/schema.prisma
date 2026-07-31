@@ -149,6 +149,10 @@ model ScheduledTopUp {
   status      String    @default("ACTIVE") // ACTIVE | PAUSED | COMPLETED | CANCELLED
   nextRunAt   DateTime? @map("next_run_at")
   lastRunAt   DateTime? @map("last_run_at")
+  reminderSentAt DateTime? @map("reminder_sent_at")
+  maxExecutions  Int?      @map("max_executions")
+  executionCount Int       @default(0) @map("execution_count")
+  endDate        DateTime? @map("end_date")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
@@ -227,6 +231,12 @@ enum NotificationType {
   BUDGET_WARNING
   BUDGET_EXCEEDED
   SYSTEM_ALERT
+  SCHEDULE_REMINDER
+  SCHEDULE_SUCCESS
+  SCHEDULE_FAILED
+  BUDGET_ALERT
+  PURCHASE_SUCCESS
+  PURCHASE_FAILED
 }
 
 enum Frequency {

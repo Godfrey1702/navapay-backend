@@ -196,6 +196,10 @@ export const ScheduledTopUpScalarFieldEnum = {
   status: 'status',
   nextRunAt: 'nextRunAt',
   lastRunAt: 'lastRunAt',
+  reminderSentAt: 'reminderSentAt',
+  maxExecutions: 'maxExecutions',
+  executionCount: 'executionCount',
+  endDate: 'endDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

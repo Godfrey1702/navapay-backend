@@ -5,6 +5,8 @@ import {
     TransactionType
 } from '../../generated/prisma/enums.js';
 import { SetBudgetInput } from './budgets.schema.js';
+import { sendNotification } from '../../lib/notifications.js';
+import { logger } from '../../utils/logger.js';
 
 /**
  * Create or update a budget for a category and period.
@@ -82,4 +84,59 @@ export async function getBudgetsWithAnalytics(userId: string, month?: number, ye
     );
 
     return analytics;
+}
+
+/**
+ * Check the current month's budget for a category after a purchase and notify
+ * the user if they've crossed the alert threshold or the limit itself.
+ */
+export async function checkBudgetAlert(userId: string, category: ServiceCategory): Promise<void> {
+    try {
+        const now = new Date();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+
+        const budget = await prisma.budget.findUnique({
+            where: { userId_category_month_year: { userId, category, month, year } },
+        });
+        if (!budget) return;
+
+        const startOfMonth = new Date(year, month - 1, 1);
+        const endOfMonth = new Date(year, month, 0, 23, 59, 59);
+
+        const aggregate = await prisma.transaction.aggregate({
+            _sum: { amount: true },
+            where: {
+                userId,
+                category,
+                type: TransactionType.PURCHASE,
+                status: TransactionStatus.SUCCESS,
+                createdAt: { gte: startOfMonth, lte: endOfMonth },
+            },
+        });
+
+        const spent = Number(aggregate._sum.amount ?? 0);
+        const limit = Number(budget.amountLimit);
+        const thresholdRatio = (budget.alertThresholdPercent ?? 80) / 100;
+
+        if (spent >= limit) {
+            await sendNotification(
+                userId,
+                'BUDGET_ALERT',
+                'Budget exceeded 🚨',
+                `You've exceeded your ${category} budget for this month. Spent: ₦${spent.toLocaleString()} / Limit: ₦${limit.toLocaleString()}`,
+                { category, spent, limit },
+            );
+        } else if (spent >= limit * thresholdRatio) {
+            await sendNotification(
+                userId,
+                'BUDGET_ALERT',
+                'Budget alert 📊',
+                `You've used ${Math.round((spent / limit) * 100)}% of your ${category} budget this month.`,
+                { category, spent, limit },
+            );
+        }
+    } catch (error) {
+        logger.error({ userId, category, error }, 'checkBudgetAlert failed');
+    }
 }

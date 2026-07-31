@@ -31,6 +31,11 @@ export const createScheduleSchema = {
                 .regex(SCHEDULED_DATE_REGEX, 'scheduledDate must be in YYYY-MM-DD format')
                 .optional(),
             label: z.string().optional(),
+            maxExecutions: z.number().int().positive().optional(),
+            endDate: z
+                .string()
+                .refine((val) => !isNaN(Date.parse(val)), 'endDate must be a valid date')
+                .optional(),
         })
         .refine((data) => data.serviceType !== 'DATA' || !!data.planId, {
             message: 'planId is required when serviceType is DATA',

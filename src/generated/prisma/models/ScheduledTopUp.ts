@@ -29,11 +29,15 @@ export type AggregateScheduledTopUp = {
 export type ScheduledTopUpAvgAggregateOutputType = {
   amount: runtime.Decimal | null
   dayOfMonth: number | null
+  maxExecutions: number | null
+  executionCount: number | null
 }
 
 export type ScheduledTopUpSumAggregateOutputType = {
   amount: runtime.Decimal | null
   dayOfMonth: number | null
+  maxExecutions: number | null
+  executionCount: number | null
 }
 
 export type ScheduledTopUpMinAggregateOutputType = {
@@ -52,6 +56,10 @@ export type ScheduledTopUpMinAggregateOutputType = {
   status: string | null
   nextRunAt: Date | null
   lastRunAt: Date | null
+  reminderSentAt: Date | null
+  maxExecutions: number | null
+  executionCount: number | null
+  endDate: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +80,10 @@ export type ScheduledTopUpMaxAggregateOutputType = {
   status: string | null
   nextRunAt: Date | null
   lastRunAt: Date | null
+  reminderSentAt: Date | null
+  maxExecutions: number | null
+  executionCount: number | null
+  endDate: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -92,6 +104,10 @@ export type ScheduledTopUpCountAggregateOutputType = {
   status: number
   nextRunAt: number
   lastRunAt: number
+  reminderSentAt: number
+  maxExecutions: number
+  executionCount: number
+  endDate: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -101,11 +117,15 @@ export type ScheduledTopUpCountAggregateOutputType = {
 export type ScheduledTopUpAvgAggregateInputType = {
   amount?: true
   dayOfMonth?: true
+  maxExecutions?: true
+  executionCount?: true
 }
 
 export type ScheduledTopUpSumAggregateInputType = {
   amount?: true
   dayOfMonth?: true
+  maxExecutions?: true
+  executionCount?: true
 }
 
 export type ScheduledTopUpMinAggregateInputType = {
@@ -124,6 +144,10 @@ export type ScheduledTopUpMinAggregateInputType = {
   status?: true
   nextRunAt?: true
   lastRunAt?: true
+  reminderSentAt?: true
+  maxExecutions?: true
+  executionCount?: true
+  endDate?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -144,6 +168,10 @@ export type ScheduledTopUpMaxAggregateInputType = {
   status?: true
   nextRunAt?: true
   lastRunAt?: true
+  reminderSentAt?: true
+  maxExecutions?: true
+  executionCount?: true
+  endDate?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -164,6 +192,10 @@ export type ScheduledTopUpCountAggregateInputType = {
   status?: true
   nextRunAt?: true
   lastRunAt?: true
+  reminderSentAt?: true
+  maxExecutions?: true
+  executionCount?: true
+  endDate?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -271,6 +303,10 @@ export type ScheduledTopUpGroupByOutputType = {
   status: string
   nextRunAt: Date | null
   lastRunAt: Date | null
+  reminderSentAt: Date | null
+  maxExecutions: number | null
+  executionCount: number
+  endDate: Date | null
   createdAt: Date
   updatedAt: Date
   _count: ScheduledTopUpCountAggregateOutputType | null
@@ -314,6 +350,10 @@ export type ScheduledTopUpWhereInput = {
   status?: Prisma.StringFilter<"ScheduledTopUp"> | string
   nextRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   lastRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
+  reminderSentAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
+  maxExecutions?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  executionCount?: Prisma.IntFilter<"ScheduledTopUp"> | number
+  endDate?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -335,6 +375,10 @@ export type ScheduledTopUpOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   nextRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
   lastRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reminderSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  maxExecutions?: Prisma.SortOrderInput | Prisma.SortOrder
+  executionCount?: Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -359,6 +403,10 @@ export type ScheduledTopUpWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"ScheduledTopUp"> | string
   nextRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   lastRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
+  reminderSentAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
+  maxExecutions?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  executionCount?: Prisma.IntFilter<"ScheduledTopUp"> | number
+  endDate?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -380,6 +428,10 @@ export type ScheduledTopUpOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   nextRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
   lastRunAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  reminderSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  maxExecutions?: Prisma.SortOrderInput | Prisma.SortOrder
+  executionCount?: Prisma.SortOrder
+  endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ScheduledTopUpCountOrderByAggregateInput
@@ -408,6 +460,10 @@ export type ScheduledTopUpScalarWhereWithAggregatesInput = {
   status?: Prisma.StringWithAggregatesFilter<"ScheduledTopUp"> | string
   nextRunAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ScheduledTopUp"> | Date | string | null
   lastRunAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ScheduledTopUp"> | Date | string | null
+  reminderSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ScheduledTopUp"> | Date | string | null
+  maxExecutions?: Prisma.IntNullableWithAggregatesFilter<"ScheduledTopUp"> | number | null
+  executionCount?: Prisma.IntWithAggregatesFilter<"ScheduledTopUp"> | number
+  endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ScheduledTopUp"> | Date | string
 }
@@ -427,6 +483,10 @@ export type ScheduledTopUpCreateInput = {
   status?: string
   nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
+  reminderSentAt?: Date | string | null
+  maxExecutions?: number | null
+  executionCount?: number
+  endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutScheduledTopUpsInput
@@ -448,6 +508,10 @@ export type ScheduledTopUpUncheckedCreateInput = {
   status?: string
   nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
+  reminderSentAt?: Date | string | null
+  maxExecutions?: number | null
+  executionCount?: number
+  endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -467,6 +531,10 @@ export type ScheduledTopUpUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  maxExecutions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  executionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutScheduledTopUpsNestedInput
@@ -488,6 +556,10 @@ export type ScheduledTopUpUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  maxExecutions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  executionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -508,6 +580,10 @@ export type ScheduledTopUpCreateManyInput = {
   status?: string
   nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
+  reminderSentAt?: Date | string | null
+  maxExecutions?: number | null
+  executionCount?: number
+  endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -527,6 +603,10 @@ export type ScheduledTopUpUpdateManyMutationInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  maxExecutions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  executionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -547,6 +627,10 @@ export type ScheduledTopUpUncheckedUpdateManyInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  maxExecutions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  executionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -577,6 +661,10 @@ export type ScheduledTopUpCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   nextRunAt?: Prisma.SortOrder
   lastRunAt?: Prisma.SortOrder
+  reminderSentAt?: Prisma.SortOrder
+  maxExecutions?: Prisma.SortOrder
+  executionCount?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -584,6 +672,8 @@ export type ScheduledTopUpCountOrderByAggregateInput = {
 export type ScheduledTopUpAvgOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   dayOfMonth?: Prisma.SortOrder
+  maxExecutions?: Prisma.SortOrder
+  executionCount?: Prisma.SortOrder
 }
 
 export type ScheduledTopUpMaxOrderByAggregateInput = {
@@ -602,6 +692,10 @@ export type ScheduledTopUpMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   nextRunAt?: Prisma.SortOrder
   lastRunAt?: Prisma.SortOrder
+  reminderSentAt?: Prisma.SortOrder
+  maxExecutions?: Prisma.SortOrder
+  executionCount?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -622,6 +716,10 @@ export type ScheduledTopUpMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   nextRunAt?: Prisma.SortOrder
   lastRunAt?: Prisma.SortOrder
+  reminderSentAt?: Prisma.SortOrder
+  maxExecutions?: Prisma.SortOrder
+  executionCount?: Prisma.SortOrder
+  endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -629,6 +727,8 @@ export type ScheduledTopUpMinOrderByAggregateInput = {
 export type ScheduledTopUpSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   dayOfMonth?: Prisma.SortOrder
+  maxExecutions?: Prisma.SortOrder
+  executionCount?: Prisma.SortOrder
 }
 
 export type ScheduledTopUpCreateNestedManyWithoutUserInput = {
@@ -696,6 +796,10 @@ export type ScheduledTopUpCreateWithoutUserInput = {
   status?: string
   nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
+  reminderSentAt?: Date | string | null
+  maxExecutions?: number | null
+  executionCount?: number
+  endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -715,6 +819,10 @@ export type ScheduledTopUpUncheckedCreateWithoutUserInput = {
   status?: string
   nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
+  reminderSentAt?: Date | string | null
+  maxExecutions?: number | null
+  executionCount?: number
+  endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -764,6 +872,10 @@ export type ScheduledTopUpScalarWhereInput = {
   status?: Prisma.StringFilter<"ScheduledTopUp"> | string
   nextRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   lastRunAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
+  reminderSentAt?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
+  maxExecutions?: Prisma.IntNullableFilter<"ScheduledTopUp"> | number | null
+  executionCount?: Prisma.IntFilter<"ScheduledTopUp"> | number
+  endDate?: Prisma.DateTimeNullableFilter<"ScheduledTopUp"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ScheduledTopUp"> | Date | string
 }
@@ -783,6 +895,10 @@ export type ScheduledTopUpCreateManyUserInput = {
   status?: string
   nextRunAt?: Date | string | null
   lastRunAt?: Date | string | null
+  reminderSentAt?: Date | string | null
+  maxExecutions?: number | null
+  executionCount?: number
+  endDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -802,6 +918,10 @@ export type ScheduledTopUpUpdateWithoutUserInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  maxExecutions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  executionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -821,6 +941,10 @@ export type ScheduledTopUpUncheckedUpdateWithoutUserInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  maxExecutions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  executionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -840,6 +964,10 @@ export type ScheduledTopUpUncheckedUpdateManyWithoutUserInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   nextRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   lastRunAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  maxExecutions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  executionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -862,6 +990,10 @@ export type ScheduledTopUpSelect<ExtArgs extends runtime.Types.Extensions.Intern
   status?: boolean
   nextRunAt?: boolean
   lastRunAt?: boolean
+  reminderSentAt?: boolean
+  maxExecutions?: boolean
+  executionCount?: boolean
+  endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -883,6 +1015,10 @@ export type ScheduledTopUpSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   status?: boolean
   nextRunAt?: boolean
   lastRunAt?: boolean
+  reminderSentAt?: boolean
+  maxExecutions?: boolean
+  executionCount?: boolean
+  endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -904,6 +1040,10 @@ export type ScheduledTopUpSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   status?: boolean
   nextRunAt?: boolean
   lastRunAt?: boolean
+  reminderSentAt?: boolean
+  maxExecutions?: boolean
+  executionCount?: boolean
+  endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -925,11 +1065,15 @@ export type ScheduledTopUpSelectScalar = {
   status?: boolean
   nextRunAt?: boolean
   lastRunAt?: boolean
+  reminderSentAt?: boolean
+  maxExecutions?: boolean
+  executionCount?: boolean
+  endDate?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ScheduledTopUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "serviceType" | "phoneNumber" | "network" | "planId" | "amount" | "frequency" | "dayOfWeek" | "dayOfMonth" | "timeOfDay" | "label" | "status" | "nextRunAt" | "lastRunAt" | "createdAt" | "updatedAt", ExtArgs["result"]["scheduledTopUp"]>
+export type ScheduledTopUpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "serviceType" | "phoneNumber" | "network" | "planId" | "amount" | "frequency" | "dayOfWeek" | "dayOfMonth" | "timeOfDay" | "label" | "status" | "nextRunAt" | "lastRunAt" | "reminderSentAt" | "maxExecutions" | "executionCount" | "endDate" | "createdAt" | "updatedAt", ExtArgs["result"]["scheduledTopUp"]>
 export type ScheduledTopUpInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -961,6 +1105,10 @@ export type $ScheduledTopUpPayload<ExtArgs extends runtime.Types.Extensions.Inte
     status: string
     nextRunAt: Date | null
     lastRunAt: Date | null
+    reminderSentAt: Date | null
+    maxExecutions: number | null
+    executionCount: number
+    endDate: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["scheduledTopUp"]>
@@ -1402,6 +1550,10 @@ export interface ScheduledTopUpFieldRefs {
   readonly status: Prisma.FieldRef<"ScheduledTopUp", 'String'>
   readonly nextRunAt: Prisma.FieldRef<"ScheduledTopUp", 'DateTime'>
   readonly lastRunAt: Prisma.FieldRef<"ScheduledTopUp", 'DateTime'>
+  readonly reminderSentAt: Prisma.FieldRef<"ScheduledTopUp", 'DateTime'>
+  readonly maxExecutions: Prisma.FieldRef<"ScheduledTopUp", 'Int'>
+  readonly executionCount: Prisma.FieldRef<"ScheduledTopUp", 'Int'>
+  readonly endDate: Prisma.FieldRef<"ScheduledTopUp", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ScheduledTopUp", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ScheduledTopUp", 'DateTime'>
 }

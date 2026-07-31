@@ -4,6 +4,7 @@ import { sendSuccess } from '../../utils/response.js';
 import { UnauthorizedError } from '../../utils/errors.js';
 import * as clubkonnect from '../../providers/clubkonnect.js';
 import { prisma } from '../../database/prisma.js';
+import { checkBudgetAlert } from '../budgets/budgets.service.js';
 
 // Admin-only: manually credit a wallet with no payment verification (support/refunds).
 // Regular wallet funding must go through Paystack — see wallets.controller.ts / the
@@ -70,9 +71,12 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
                 reference: requestId,
                 description: `Airtime purchase - ${phoneNumber}`,
                 status: 'SUCCESS',
+                category: 'AIRTIME',
                 metadata: { phoneNumber, network, providerResponse: result },
             },
         });
+
+        await checkBudgetAlert(userId, 'AIRTIME');
 
         sendSuccess(res, result, 'Airtime purchased successfully');
     } catch (error) {
@@ -127,9 +131,12 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
                 reference: requestId,
                 description: `Data purchase - ${plan.name} - ${phoneNumber}`,
                 status: 'SUCCESS',
+                category: 'DATA',
                 metadata: { phoneNumber, network, planId, planCode, providerResponse: result },
             },
         });
+
+        await checkBudgetAlert(userId, 'DATA');
 
         sendSuccess(res, result, 'Data purchased successfully');
     } catch (error) {

@@ -88,6 +88,8 @@ export async function createSchedule(userId: string, payload: CreateScheduleInpu
             dayOfMonth: payload.dayOfMonth,
             timeOfDay: payload.timeOfDay,
             label: payload.label,
+            maxExecutions: payload.maxExecutions ?? null,
+            endDate: payload.endDate ? new Date(payload.endDate) : null,
             nextRunAt,
         },
     });
@@ -123,7 +125,7 @@ export async function updateSchedule(userId: string, id: string, payload: Update
         where: { id },
         data: {
             ...rest,
-            ...(nextRunAt ? { nextRunAt } : {}),
+            ...(nextRunAt ? { nextRunAt, reminderSentAt: null } : {}),
         },
     });
 }
