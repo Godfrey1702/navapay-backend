@@ -35,13 +35,18 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
     try {
         const { phoneNumber, amount, network, idempotencyKey } = req.body;
         const userId = req.user!.id;
+        const requestId = idempotencyKey || `AIR-${userId}-${Date.now()}`;
+
+        const existing = await prisma.transaction.findFirst({ where: { reference: requestId, userId } });
+        if (existing) {
+            const providerResponse = (existing.metadata as Record<string, any> | null)?.providerResponse ?? existing;
+            return sendSuccess(res, providerResponse, 'Airtime purchased successfully');
+        }
 
         const wallet = await prisma.wallet.findFirst({ where: { userId } });
         if (!wallet || wallet.balance < amount) {
             return res.status(400).json({ success: false, message: 'Insufficient balance' });
         }
-
-        const requestId = idempotencyKey || `AIR-${userId}-${Date.now()}`;
 
         console.log('AIRTIME REQUEST BODY:', req.body);
         console.log('PURCHASE REQUEST:', { phoneNumber, amount, amountType: typeof amount, network, requestId });
@@ -88,6 +93,13 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
     try {
         const { phoneNumber, amount, network, planId, idempotencyKey } = req.body;
         const userId = req.user!.id;
+        const requestId = idempotencyKey || `DATA-${userId}-${Date.now()}`;
+
+        const existing = await prisma.transaction.findFirst({ where: { reference: requestId, userId } });
+        if (existing) {
+            const providerResponse = (existing.metadata as Record<string, any> | null)?.providerResponse ?? existing;
+            return sendSuccess(res, providerResponse, 'Data purchased successfully');
+        }
 
         const wallet = await prisma.wallet.findFirst({ where: { userId } });
         if (!wallet || wallet.balance < amount) {
@@ -99,8 +111,6 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
             return res.status(400).json({ success: false, message: 'Invalid data plan selected' });
         }
         const planCode = plan.code;
-
-        const requestId = idempotencyKey || `DATA-${userId}-${Date.now()}`;
 
         console.log('DATA PURCHASE BODY:', req.body);
         console.log('PLAN CODE BEING SENT:', planCode);
