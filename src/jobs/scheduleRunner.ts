@@ -72,19 +72,30 @@ async function executeSchedule(schedule: ScheduledTopUp): Promise<void> {
     }
 
     await prisma.$transaction(async (tx) => {
-        await tx.wallet.update({
-            where: { id: wallet.id },
-            data: { balance: { decrement: schedule.amount } },
-        });
+        const lockedWallet = await tx.wallet.findUnique({ where: { id: wallet.id } });
+        if (!lockedWallet || Number(lockedWallet.balance) < Number(schedule.amount)) {
+            throw new Error('Insufficient balance');
+        }
+
+        let updatedWallet;
+        try {
+            // Optimistic lock: fails (throws) if version no longer matches what we just read.
+            updatedWallet = await tx.wallet.update({
+                where: { id: lockedWallet.id, version: lockedWallet.version },
+                data: { balance: { decrement: schedule.amount }, version: { increment: 1 } },
+            });
+        } catch {
+            throw new Error('Wallet was modified concurrently. Please try again.');
+        }
 
         await tx.transaction.create({
             data: {
                 userId: schedule.userId,
-                walletId: wallet.id,
+                walletId: lockedWallet.id,
                 type: 'PURCHASE',
                 amount: schedule.amount,
                 totalAmount: schedule.amount,
-                balanceSnapshot: Number(wallet.balance) - Number(schedule.amount),
+                balanceSnapshot: Number(updatedWallet.balance),
                 reference: requestId,
                 description:
                     schedule.serviceType === 'DATA'

@@ -1,6 +1,6 @@
 import { prisma } from '../../database/prisma.js';
 import { withTransaction } from '../../database/transaction.js';
-import { BadRequestError, NotFoundError } from '../../utils/errors.js';
+import { BadRequestError, NotFoundError, ConflictError } from '../../utils/errors.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
     TransactionStatus,
@@ -15,33 +15,40 @@ import { logger } from '../../utils/logger.js';
  */
 export async function adminDeposit(userId: string, input: CreateDepositInput) {
     return await withTransaction(async (tx) => {
-        // 1. Get and lock wallet (simple find for now, usually we use queryRaw for FOR UPDATE)
-        const wallet = await tx.wallet.findUnique({
+        // 1. Get and lock wallet
+        const lockedWallet = await tx.wallet.findUnique({
             where: { userId },
         });
 
-        if (!wallet) throw new NotFoundError('Wallet not found');
+        if (!lockedWallet) throw new NotFoundError('Wallet not found');
 
-        // 2. Create transaction record
+        // 2. Update wallet balance — optimistic lock: fails (throws) if version no longer
+        // matches what we just read.
+        let updatedWallet;
+        try {
+            updatedWallet = await tx.wallet.update({
+                where: { id: lockedWallet.id, version: lockedWallet.version },
+                data: {
+                    balance: { increment: input.amount },
+                    version: { increment: 1 },
+                },
+            });
+        } catch {
+            throw new ConflictError('Wallet was modified concurrently. Please try again.');
+        }
+
+        // 3. Create transaction record
         const transaction = await tx.transaction.create({
             data: {
                 reference: `DEP-${uuidv4().split('-')[0].toUpperCase()}-${Date.now()}`,
                 userId,
-                walletId: wallet.id,
+                walletId: lockedWallet.id,
                 amount: input.amount,
                 totalAmount: input.amount,
                 type: TransactionType.DEPOSIT,
                 status: TransactionStatus.SUCCESS,
                 description: input.description || 'Wallet funding',
-                balanceSnapshot: Number(wallet.balance) + input.amount,
-            },
-        });
-
-        // 3. Update wallet balance
-        await tx.wallet.update({
-            where: { id: wallet.id },
-            data: {
-                balance: { increment: input.amount },
+                balanceSnapshot: Number(updatedWallet.balance),
             },
         });
 

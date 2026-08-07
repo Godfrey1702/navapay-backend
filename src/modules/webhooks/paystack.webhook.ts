@@ -53,19 +53,28 @@ export async function paystackWebhook(req: Request, res: Response) {
         }
 
         await withTransaction(async (tx) => {
-            await tx.wallet.update({
-                where: { id: wallet.id },
-                data: { balance: { increment: amountNaira } },
-            });
+            const lockedWallet = await tx.wallet.findUnique({ where: { id: wallet.id } });
+            if (!lockedWallet) throw new Error('Wallet not found');
+
+            let updatedWallet;
+            try {
+                // Optimistic lock: fails (throws) if version no longer matches what we just read.
+                updatedWallet = await tx.wallet.update({
+                    where: { id: lockedWallet.id, version: lockedWallet.version },
+                    data: { balance: { increment: amountNaira }, version: { increment: 1 } },
+                });
+            } catch {
+                throw new Error('Wallet was modified concurrently. Please try again.');
+            }
 
             await tx.transaction.create({
                 data: {
                     userId,
-                    walletId: wallet.id,
+                    walletId: lockedWallet.id,
                     type: TransactionType.DEPOSIT,
                     amount: amountNaira,
                     totalAmount: amountNaira,
-                    balanceSnapshot: Number(wallet.balance) + amountNaira,
+                    balanceSnapshot: Number(updatedWallet.balance),
                     reference,
                     description: 'Wallet funding via Paystack',
                     status: TransactionStatus.SUCCESS,

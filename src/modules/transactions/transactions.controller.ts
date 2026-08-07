@@ -72,26 +72,48 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
             return res.status(400).json({ success: false, message: err.message });
         }
 
-        await prisma.wallet.update({
-            where: { id: wallet.id },
-            data: { balance: { decrement: amount } },
-        });
+        try {
+            await prisma.$transaction(async (tx) => {
+                // Re-fetch inside the transaction so the balance/version check is against
+                // the latest row, not the pre-provider-call snapshot read above.
+                const lockedWallet = await tx.wallet.findFirst({ where: { userId } });
+                if (!lockedWallet || Number(lockedWallet.balance) < amount) {
+                    throw new Error('Insufficient balance');
+                }
 
-        await prisma.transaction.create({
-            data: {
-                userId,
-                walletId: wallet.id,
-                type: 'PURCHASE',
-                amount,
-                totalAmount: amount,
-                balanceSnapshot: Number(wallet.balance.toString()) - Number(amount),
-                reference: requestId,
-                description: `Airtime purchase - ${phoneNumber}`,
-                status: 'SUCCESS',
-                category: 'AIRTIME',
-                metadata: { phoneNumber, network, providerResponse: result },
-            },
-        });
+                let updatedWallet;
+                try {
+                    // Optimistic lock: only succeeds if version still matches what we just read.
+                    // A concurrent debit that already bumped the version makes this match zero
+                    // rows, which Prisma surfaces as a thrown error (P2025) instead of null.
+                    updatedWallet = await tx.wallet.update({
+                        where: { id: lockedWallet.id, version: lockedWallet.version },
+                        data: { balance: { decrement: amount }, version: { increment: 1 } },
+                    });
+                } catch {
+                    throw new Error('Wallet was modified concurrently. Please try again.');
+                }
+
+                await tx.transaction.create({
+                    data: {
+                        userId,
+                        walletId: lockedWallet.id,
+                        type: 'PURCHASE',
+                        amount,
+                        totalAmount: amount,
+                        balanceSnapshot: Number(updatedWallet.balance),
+                        reference: requestId,
+                        description: `Airtime purchase - ${phoneNumber}`,
+                        status: 'SUCCESS',
+                        category: 'AIRTIME',
+                        metadata: { phoneNumber, network, providerResponse: result },
+                    },
+                });
+            });
+        } catch (err: any) {
+            const concurrent = err.message?.includes('concurrently');
+            return res.status(concurrent ? 409 : 400).json({ success: false, message: err.message });
+        }
 
         await checkBudgetAlert(userId, 'AIRTIME');
         await auditLog('PURCHASE_AIRTIME', req, { phoneNumber, network, amount }, userId);
@@ -147,26 +169,43 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
             return res.status(400).json({ success: false, message: err.message });
         }
 
-        await prisma.wallet.update({
-            where: { id: wallet.id },
-            data: { balance: { decrement: verifiedAmount } },
-        });
+        try {
+            await prisma.$transaction(async (tx) => {
+                const lockedWallet = await tx.wallet.findFirst({ where: { userId } });
+                if (!lockedWallet || Number(lockedWallet.balance) < verifiedAmount) {
+                    throw new Error('Insufficient balance');
+                }
 
-        await prisma.transaction.create({
-            data: {
-                userId,
-                walletId: wallet.id,
-                type: 'PURCHASE',
-                amount: verifiedAmount,
-                totalAmount: verifiedAmount,
-                balanceSnapshot: Number(wallet.balance.toString()) - verifiedAmount,
-                reference: requestId,
-                description: `Data purchase - ${plan.name} - ${phoneNumber}`,
-                status: 'SUCCESS',
-                category: 'DATA',
-                metadata: { phoneNumber, network, planId, planCode, providerResponse: result },
-            },
-        });
+                let updatedWallet;
+                try {
+                    updatedWallet = await tx.wallet.update({
+                        where: { id: lockedWallet.id, version: lockedWallet.version },
+                        data: { balance: { decrement: verifiedAmount }, version: { increment: 1 } },
+                    });
+                } catch {
+                    throw new Error('Wallet was modified concurrently. Please try again.');
+                }
+
+                await tx.transaction.create({
+                    data: {
+                        userId,
+                        walletId: lockedWallet.id,
+                        type: 'PURCHASE',
+                        amount: verifiedAmount,
+                        totalAmount: verifiedAmount,
+                        balanceSnapshot: Number(updatedWallet.balance),
+                        reference: requestId,
+                        description: `Data purchase - ${plan.name} - ${phoneNumber}`,
+                        status: 'SUCCESS',
+                        category: 'DATA',
+                        metadata: { phoneNumber, network, planId, planCode, providerResponse: result },
+                    },
+                });
+            });
+        } catch (err: any) {
+            const concurrent = err.message?.includes('concurrently');
+            return res.status(concurrent ? 409 : 400).json({ success: false, message: err.message });
+        }
 
         await checkBudgetAlert(userId, 'DATA');
         await auditLog('PURCHASE_DATA', req, { phoneNumber, network, planId, amount: verifiedAmount }, userId);

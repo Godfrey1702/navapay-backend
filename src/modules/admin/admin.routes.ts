@@ -3,6 +3,8 @@ import { protect, restrictTo } from '../../middleware/auth.js';
 import { prisma } from '../../database/prisma.js';
 import { sendSuccess } from '../../utils/response.js';
 import { UserRole } from '../../generated/prisma/enums.js';
+import { reconcileWallet } from '../../lib/ledger.js';
+import { auditLog } from '../../lib/audit.js';
 
 const router = Router();
 
@@ -100,6 +102,23 @@ router.get('/audit-logs', restrictTo(UserRole.ADMIN), async (req: Request, res: 
             total,
             totalPages: Math.ceil(total / take),
         });
+    } catch (err) { next(err); }
+});
+
+// ─── Wallet reconciliation (ADMIN only) ──────────────────────────────────────
+router.get('/wallets/:userId/reconcile', restrictTo(UserRole.ADMIN), async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = String(req.params.userId);
+        const wallet = await prisma.wallet.findFirst({ where: { userId } });
+        if (!wallet) return res.status(404).json({ success: false, message: 'Wallet not found' });
+
+        const result = await reconcileWallet(wallet.id);
+
+        if (result.hasDiscrepancy) {
+            await auditLog('WALLET_RECONCILIATION', req, { userId, ...result });
+        }
+
+        sendSuccess(res, result, 'Wallet reconciliation complete');
     } catch (err) { next(err); }
 });
 

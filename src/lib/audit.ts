@@ -18,7 +18,8 @@ export type AuditAction =
     | 'SCHEDULE_EXECUTED'
     | 'BUDGET_SET'
     | 'ADMIN_WALLET_ADJUST'
-    | 'ADMIN_USER_VIEW';
+    | 'ADMIN_USER_VIEW'
+    | 'WALLET_RECONCILIATION';
 
 export async function auditLog(
     action: AuditAction,

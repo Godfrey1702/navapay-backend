@@ -4,7 +4,11 @@ import { logger } from './utils/logger.js';
 import { connectDatabase, disconnectDatabase } from './database/index.js';
 import { connectRedis, disconnectRedis } from './services/index.js';
 import { startScheduleRunner, stopScheduleRunner } from './jobs/scheduleRunner.js';
+import { runReconciliation } from './jobs/reconciliationJob.js';
 import http from 'http';
+
+const RECONCILIATION_INTERVAL_MS = 24 * 60 * 60 * 1000; // daily
+let reconciliationIntervalHandle: NodeJS.Timeout | null = null;
 
 const server = http.createServer(app);
 
@@ -18,6 +22,12 @@ async function startServer(): Promise<void> {
 
         // Start the scheduled top-up polling runner
         startScheduleRunner();
+
+        // Run wallet reconciliation daily, plus once on startup
+        reconciliationIntervalHandle = setInterval(() => {
+            runReconciliation().catch((error) => logger.error({ error }, 'Reconciliation tick failed'));
+        }, RECONCILIATION_INTERVAL_MS);
+        runReconciliation().catch((error) => logger.error({ error }, 'Initial reconciliation run failed'));
 
         // Start HTTP server
         server.listen(env.PORT, () => {
@@ -42,6 +52,10 @@ async function gracefulShutdown(signal: string): Promise<void> {
     logger.info({ signal }, 'Received shutdown signal, starting graceful shutdown...');
 
     stopScheduleRunner();
+    if (reconciliationIntervalHandle) {
+        clearInterval(reconciliationIntervalHandle);
+        reconciliationIntervalHandle = null;
+    }
 
     server.close(async () => {
         logger.info('HTTP server closed');
