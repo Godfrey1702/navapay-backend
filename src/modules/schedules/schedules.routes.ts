@@ -3,6 +3,7 @@ import * as schedulesController from './schedules.controller.js';
 import { validate } from '../../middleware/validate.js';
 import { protect } from '../../middleware/auth.js';
 import { requirePin } from '../../middleware/requirePin.js';
+import { scheduleLimiter } from '../../middleware/rateLimiter.js';
 import { createScheduleSchema, updateScheduleSchema } from './schedules.schema.js';
 
 const router = Router();
@@ -11,7 +12,7 @@ const router = Router();
 router.use(protect);
 
 router.get('/', schedulesController.listSchedules);
-router.post('/', requirePin, validate(createScheduleSchema), schedulesController.createSchedule);
+router.post('/', scheduleLimiter, requirePin, validate(createScheduleSchema), schedulesController.createSchedule);
 router.patch('/:id', validate(updateScheduleSchema), schedulesController.updateSchedule);
 router.delete('/:id', schedulesController.deleteSchedule);
 

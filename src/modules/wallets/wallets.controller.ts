@@ -3,6 +3,7 @@ import * as walletService from './wallets.service.js';
 import * as clubkonnect from '../../providers/clubkonnect.js';
 import { sendSuccess } from '../../utils/response.js';
 import { UnauthorizedError, BadRequestError } from '../../utils/errors.js';
+import { auditLog } from '../../lib/audit.js';
 
 export async function getMyWallet(req: Request, res: Response, next: NextFunction) {
     try {
@@ -47,6 +48,7 @@ export async function verifyPayment(req: Request, res: Response, next: NextFunct
         if (!reference) throw new BadRequestError('Payment reference is required');
 
         const wallet = await walletService.verifyAndCreditWallet(req.user.id, reference);
+        await auditLog('WALLET_FUNDED', req, { reference }, req.user.id);
         sendSuccess(res, wallet, 'Payment verified and wallet credited');
     } catch (error) {
         console.error('[verifyPayment] error:', error);

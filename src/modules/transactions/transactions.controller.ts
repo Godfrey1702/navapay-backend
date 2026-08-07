@@ -5,6 +5,10 @@ import { UnauthorizedError } from '../../utils/errors.js';
 import * as clubkonnect from '../../providers/clubkonnect.js';
 import { prisma } from '../../database/prisma.js';
 import { checkBudgetAlert } from '../budgets/budgets.service.js';
+import { auditLog } from '../../lib/audit.js';
+
+const MIN_AIRTIME = 50;
+const MAX_AIRTIME = 50000;
 
 // Admin-only: manually credit a wallet with no payment verification (support/refunds).
 // Regular wallet funding must go through Paystack — see wallets.controller.ts / the
@@ -41,6 +45,14 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
         if (existing) {
             const providerResponse = (existing.metadata as Record<string, any> | null)?.providerResponse ?? existing;
             return sendSuccess(res, providerResponse, 'Airtime purchased successfully');
+        }
+
+        if (amount < MIN_AIRTIME || amount > MAX_AIRTIME) {
+            return res.status(400).json({
+                success: false,
+                message: `Airtime amount must be between ₦${MIN_AIRTIME} and ₦${MAX_AIRTIME}`,
+                code: 'INVALID_AMOUNT',
+            });
         }
 
         const wallet = await prisma.wallet.findFirst({ where: { userId } });
@@ -82,6 +94,7 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
         });
 
         await checkBudgetAlert(userId, 'AIRTIME');
+        await auditLog('PURCHASE_AIRTIME', req, { phoneNumber, network, amount }, userId);
 
         sendSuccess(res, result, 'Airtime purchased successfully');
     } catch (error) {
@@ -101,20 +114,29 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
             return sendSuccess(res, providerResponse, 'Data purchased successfully');
         }
 
-        const wallet = await prisma.wallet.findFirst({ where: { userId } });
-        if (!wallet || wallet.balance < amount) {
-            return res.status(400).json({ success: false, message: 'Insufficient balance' });
-        }
-
         const plan = await prisma.dataPlan.findUnique({ where: { id: planId } });
         if (!plan) {
             return res.status(400).json({ success: false, message: 'Invalid data plan selected' });
         }
+        if (Number(plan.amount) !== Number(amount)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid purchase amount',
+                code: 'PRICE_MISMATCH',
+            });
+        }
+        // Use plan.amount as the authoritative amount going forward
+        const verifiedAmount = Number(plan.amount);
         const planCode = plan.code;
+
+        const wallet = await prisma.wallet.findFirst({ where: { userId } });
+        if (!wallet || Number(wallet.balance) < verifiedAmount) {
+            return res.status(400).json({ success: false, message: 'Insufficient balance' });
+        }
 
         console.log('DATA PURCHASE BODY:', req.body);
         console.log('PLAN CODE BEING SENT:', planCode);
-        console.log('PURCHASE REQUEST:', { phoneNumber, planCode, amount, network, requestId });
+        console.log('PURCHASE REQUEST:', { phoneNumber, planCode, verifiedAmount, network, requestId });
 
         let result: any;
         try {
@@ -127,7 +149,7 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
 
         await prisma.wallet.update({
             where: { id: wallet.id },
-            data: { balance: { decrement: amount } },
+            data: { balance: { decrement: verifiedAmount } },
         });
 
         await prisma.transaction.create({
@@ -135,9 +157,9 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
                 userId,
                 walletId: wallet.id,
                 type: 'PURCHASE',
-                amount,
-                totalAmount: amount,
-                balanceSnapshot: Number(wallet.balance.toString()) - Number(amount),
+                amount: verifiedAmount,
+                totalAmount: verifiedAmount,
+                balanceSnapshot: Number(wallet.balance.toString()) - verifiedAmount,
                 reference: requestId,
                 description: `Data purchase - ${plan.name} - ${phoneNumber}`,
                 status: 'SUCCESS',
@@ -147,6 +169,7 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
         });
 
         await checkBudgetAlert(userId, 'DATA');
+        await auditLog('PURCHASE_DATA', req, { phoneNumber, network, planId, amount: verifiedAmount }, userId);
 
         sendSuccess(res, result, 'Data purchased successfully');
     } catch (error) {

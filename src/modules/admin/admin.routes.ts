@@ -67,4 +67,40 @@ router.delete('/data-plans/:id', async (req: Request, res: Response, next: NextF
     } catch (err) { next(err); }
 });
 
+// ─── Audit log viewer (ADMIN only) ───────────────────────────────────────────
+router.get('/audit-logs', restrictTo(UserRole.ADMIN), async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { userId, action, from, to, page = '1', limit = '50' } = req.query;
+
+        const where: Record<string, any> = {};
+        if (userId) where.userId = String(userId);
+        if (action) where.action = String(action);
+        if (from || to) {
+            where.createdAt = {};
+            if (from) where.createdAt.gte = new Date(String(from));
+            if (to) where.createdAt.lte = new Date(String(to));
+        }
+
+        const take = Number(limit);
+        const skip = (Number(page) - 1) * take;
+
+        const [logs, total] = await Promise.all([
+            prisma.auditLog.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                take,
+                skip,
+            }),
+            prisma.auditLog.count({ where }),
+        ]);
+
+        sendSuccess(res, logs, 'Audit logs retrieved', 200, {
+            page: Number(page),
+            limit: take,
+            total,
+            totalPages: Math.ceil(total / take),
+        });
+    } catch (err) { next(err); }
+});
+
 export default router;

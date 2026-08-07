@@ -30,3 +30,29 @@ export const strictRateLimiter = rateLimit({
         },
     },
 });
+
+export const purchaseLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10, // max 10 purchases per minute per user
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: 'Too many purchase attempts. Please wait a moment.',
+        code: 'RATE_LIMIT_EXCEEDED',
+    },
+    keyGenerator: (req) => req.user?.id || req.ip || 'unknown',
+});
+
+export const scheduleLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 20, // max 20 schedules per hour per user
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: 'Too many schedule creation attempts.',
+        code: 'RATE_LIMIT_EXCEEDED',
+    },
+    keyGenerator: (req) => req.user?.id || req.ip || 'unknown',
+});

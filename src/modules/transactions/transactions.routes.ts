@@ -3,6 +3,7 @@ import * as transactionController from './transactions.controller.js';
 import { protect, restrictTo } from '../../middleware/auth.js';
 import { validate } from '../../middleware/validate.js';
 import { requirePin } from '../../middleware/requirePin.js';
+import { purchaseLimiter } from '../../middleware/rateLimiter.js';
 import { createDepositSchema, createPurchaseSchema } from './transactions.schema.js';
 import { UserRole } from '../../generated/prisma/enums.js';
 
@@ -22,8 +23,8 @@ router.post(
     transactionController.adminDeposit,
 );
 router.post('/purchase', validate(createPurchaseSchema), transactionController.purchase);
-router.post('/airtime', requirePin, transactionController.purchaseAirtime);
-router.post('/data', requirePin, transactionController.purchaseData);
+router.post('/airtime', purchaseLimiter, requirePin, transactionController.purchaseAirtime);
+router.post('/data', purchaseLimiter, requirePin, transactionController.purchaseData);
 router.get('/history', transactionController.getTransactionHistory);
 router.get('/:id/verify', transactionController.verifyTransaction);
 

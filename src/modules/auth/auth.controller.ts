@@ -6,6 +6,7 @@ import { logger } from '../../utils/logger.js';
 import { UnauthorizedError } from '../../utils/errors.js';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../../database/prisma.js';
+import { auditLog } from '../../lib/audit.js';
 
 const COOKIE_OPTIONS: CookieOptions = {
     httpOnly: true,
@@ -17,6 +18,7 @@ const COOKIE_OPTIONS: CookieOptions = {
 export async function register(req: Request, res: Response, next: NextFunction) {
     try {
         const result = await authService.register(req.body);
+        await auditLog('REGISTER', req, { email: result.user.email }, result.user.id);
 
         // No tokens issued here — the account is unverified until the user clicks
         // the link in their verification email, then logs in via /auth/login.
@@ -33,8 +35,11 @@ export async function login(req: Request, res: Response, next: NextFunction) {
         // Set refresh token in HTTP-only cookie
         res.cookie('refreshToken', result.tokens.refreshToken, COOKIE_OPTIONS);
 
+        await auditLog('LOGIN_SUCCESS', req, { email: result.user.email }, result.user.id);
+
         sendSuccess(res, { user: result.user, accessToken: result.tokens.accessToken }, 'Login successful');
     } catch (error) {
+        await auditLog('LOGIN_FAILED', req, { email: req.body?.email });
         next(error);
     }
 }

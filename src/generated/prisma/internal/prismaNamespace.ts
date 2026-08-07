@@ -1216,9 +1216,7 @@ export const AuditLogScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   action: 'action',
-  resource: 'resource',
-  resourceId: 'resourceId',
-  details: 'details',
+  metadata: 'metadata',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
   createdAt: 'createdAt'
@@ -1299,6 +1297,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

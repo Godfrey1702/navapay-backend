@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../../database/prisma.js';
 import { sendPinResetEmail } from '../../lib/email.js';
+import { auditLog } from '../../lib/audit.js';
 
 // POST /api/v1/pin/set
 // Sets PIN for first time OR after reset
@@ -24,6 +25,8 @@ export async function setPin(req: Request, res: Response, next: NextFunction) {
             where: { id: userId },
             data: { transactionPin: hashedPin },
         });
+
+        await auditLog('PIN_SET', req, {}, userId);
 
         res.status(200).json({
             success: true,
@@ -172,6 +175,8 @@ export async function resetPin(req: Request, res: Response, next: NextFunction) 
                 transactionPinResetExpiry: null,
             },
         });
+
+        await auditLog('PIN_RESET', req, {}, user.id);
 
         res.status(200).json({
             success: true,

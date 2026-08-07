@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as schedulesService from './schedules.service.js';
 import { sendSuccess } from '../../utils/response.js';
 import { UnauthorizedError } from '../../utils/errors.js';
+import { auditLog } from '../../lib/audit.js';
 
 export async function listSchedules(req: Request, res: Response, next: NextFunction) {
     try {
@@ -17,6 +18,8 @@ export async function createSchedule(req: Request, res: Response, next: NextFunc
     try {
         if (!req.user) throw new UnauthorizedError('User not authenticated');
         const schedule = await schedulesService.createSchedule(req.user.id, req.body);
+        const { serviceType, phoneNumber, frequency, amount } = req.body;
+        await auditLog('SCHEDULE_CREATED', req, { serviceType, phoneNumber, frequency, amount }, req.user.id);
         sendSuccess(res, schedule, 'Schedule created', 201);
     } catch (err) {
         next(err);
