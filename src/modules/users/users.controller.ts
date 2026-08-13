@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as userService from './users.service.js';
 import { sendSuccess } from '../../utils/response.js';
 import { UnauthorizedError } from '../../utils/errors.js';
+import { sanitizeUser } from '../../utils/sanitize.js';
 import { prisma } from '../../database/prisma.js';
 
 export async function getMe(req: Request, res: Response, next: NextFunction) {
@@ -18,7 +19,7 @@ export async function getMe(req: Request, res: Response, next: NextFunction) {
                 createdAt: true,
             },
         });
-        res.json({ success: true, data: user });
+        res.json({ success: true, data: user ? sanitizeUser(user) : user });
     } catch (err: any) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -90,7 +91,7 @@ export async function updateMe(req: Request, res: Response, next: NextFunction) 
                 createdAt: true,
             },
         });
-        res.json({ success: true, data: user });
+        res.json({ success: true, data: sanitizeUser(user) });
     } catch (err: any) {
         res.status(500).json({ success: false, message: err.message });
     }

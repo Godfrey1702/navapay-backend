@@ -4,6 +4,7 @@ import { sendSuccess } from '../../utils/response.js';
 import * as authService from './auth.service.js';
 import { logger } from '../../utils/logger.js';
 import { UnauthorizedError } from '../../utils/errors.js';
+import { sanitizeUser } from '../../utils/sanitize.js';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../../database/prisma.js';
 import { auditLog } from '../../lib/audit.js';
@@ -22,7 +23,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
 
         // No tokens issued here — the account is unverified until the user clicks
         // the link in their verification email, then logs in via /auth/login.
-        sendSuccess(res, { user: result.user }, 'Registration successful. Please check your email to verify your account.', 201);
+        sendSuccess(res, { user: sanitizeUser(result.user) }, 'Registration successful. Please check your email to verify your account.', 201);
     } catch (error) {
         next(error);
     }
@@ -37,7 +38,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
         await auditLog('LOGIN_SUCCESS', req, { email: result.user.email }, result.user.id);
 
-        sendSuccess(res, { user: result.user, accessToken: result.tokens.accessToken }, 'Login successful');
+        sendSuccess(res, { user: sanitizeUser(result.user), accessToken: result.tokens.accessToken }, 'Login successful');
     } catch (error) {
         await auditLog('LOGIN_FAILED', req, { email: req.body?.email });
         next(error);
@@ -79,7 +80,7 @@ export async function getMe(req: Request, res: Response, next: NextFunction) {
         where: { id: req.user!.id },
         select: { id: true, email: true, fullName: true, role: true, createdAt: true },
     });
-    sendSuccess(res, user, 'User retrieved successfully');
+    sendSuccess(res, user ? sanitizeUser(user) : user, 'User retrieved successfully');
 }
 
 export async function updatePassword(req: Request, res: Response, next: NextFunction) {
