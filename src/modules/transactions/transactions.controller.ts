@@ -6,6 +6,7 @@ import * as clubkonnect from '../../providers/clubkonnect.js';
 import { prisma } from '../../database/prisma.js';
 import { checkBudgetAlert } from '../budgets/budgets.service.js';
 import { auditLog } from '../../lib/audit.js';
+import { sendNotification } from '../../lib/notifications.js';
 
 const MIN_AIRTIME = 50;
 const MAX_AIRTIME = 50000;
@@ -43,6 +44,13 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
 
         const existing = await prisma.transaction.findFirst({ where: { reference: requestId, userId } });
         if (existing) {
+            if (existing.status === 'PENDING' || existing.status === 'PROCESSING') {
+                return res.status(409).json({
+                    success: false,
+                    message: 'A purchase with this reference is already in progress',
+                    code: 'DUPLICATE_IN_PROGRESS',
+                });
+            }
             const providerResponse = (existing.metadata as Record<string, any> | null)?.providerResponse ?? existing;
             return sendSuccess(res, providerResponse, 'Airtime purchased successfully');
         }
@@ -56,22 +64,47 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
         }
 
         const wallet = await prisma.wallet.findFirst({ where: { userId } });
-        if (!wallet || wallet.balance < amount) {
+        if (!wallet || Number(wallet.balance) < amount) {
             return res.status(400).json({ success: false, message: 'Insufficient balance' });
         }
 
         console.log('AIRTIME REQUEST BODY:', req.body);
         console.log('PURCHASE REQUEST:', { phoneNumber, amount, amountType: typeof amount, network, requestId });
 
+        // 1. Create the transaction as PENDING before touching the provider
+        const pendingTx = await prisma.transaction.create({
+            data: {
+                userId,
+                walletId: wallet.id,
+                type: 'PURCHASE',
+                amount,
+                totalAmount: amount,
+                reference: requestId,
+                description: `Airtime purchase - ${phoneNumber}`,
+                status: 'PENDING',
+                category: 'AIRTIME',
+                metadata: { phoneNumber, network },
+            },
+        });
+
+        // 2. Move to PROCESSING right before calling the provider
+        await prisma.transaction.update({ where: { id: pendingTx.id }, data: { status: 'PROCESSING' } });
+
+        // 3. Call Clubkonnect
         let result: any;
         try {
             result = await clubkonnect.purchaseAirtime(phoneNumber, amount, network, requestId);
             console.log('CLUBKONNECT AIRTIME RESPONSE:', JSON.stringify(result));
         } catch (err: any) {
             console.error('CLUBKONNECT AIRTIME ERROR:', err.message);
+            await prisma.transaction.update({
+                where: { id: pendingTx.id },
+                data: { status: 'FAILED', metadata: { phoneNumber, network, error: err.message } },
+            });
             return res.status(400).json({ success: false, message: err.message });
         }
 
+        // 4. Provider succeeded — atomically deduct the wallet and mark SUCCESS
         try {
             await prisma.$transaction(async (tx) => {
                 // Re-fetch inside the transaction so the balance/version check is against
@@ -94,25 +127,45 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
                     throw new Error('Wallet was modified concurrently. Please try again.');
                 }
 
-                await tx.transaction.create({
+                await tx.transaction.update({
+                    where: { id: pendingTx.id },
                     data: {
-                        userId,
-                        walletId: lockedWallet.id,
-                        type: 'PURCHASE',
-                        amount,
-                        totalAmount: amount,
-                        balanceSnapshot: Number(updatedWallet.balance),
-                        reference: requestId,
-                        description: `Airtime purchase - ${phoneNumber}`,
                         status: 'SUCCESS',
-                        category: 'AIRTIME',
+                        balanceSnapshot: Number(updatedWallet.balance),
                         metadata: { phoneNumber, network, providerResponse: result },
                     },
                 });
             });
         } catch (err: any) {
-            const concurrent = err.message?.includes('concurrently');
-            return res.status(concurrent ? 409 : 400).json({ success: false, message: err.message });
+            // 🔴 Critical: the provider already delivered the airtime but our DB update
+            // failed (insufficient balance on re-check, concurrent modification, etc).
+            // We cannot silently fail here — flag it for manual review instead.
+            await prisma.transaction.update({
+                where: { id: pendingTx.id },
+                data: {
+                    status: 'UNKNOWN',
+                    metadata: {
+                        phoneNumber,
+                        network,
+                        providerResponse: result,
+                        error: err.message,
+                        requiresManualReview: true,
+                    },
+                },
+            });
+
+            await sendNotification(
+                userId,
+                'PURCHASE_FAILED',
+                'Purchase requires review',
+                'Your airtime purchase was processed by the provider but we encountered an error recording it. Our team will resolve this within 24 hours.',
+                { transactionId: pendingTx.id },
+            );
+
+            return res.status(500).json({
+                success: false,
+                message: 'Purchase processed but needs verification. Contact support.',
+            });
         }
 
         await checkBudgetAlert(userId, 'AIRTIME');
@@ -132,6 +185,13 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
 
         const existing = await prisma.transaction.findFirst({ where: { reference: requestId, userId } });
         if (existing) {
+            if (existing.status === 'PENDING' || existing.status === 'PROCESSING') {
+                return res.status(409).json({
+                    success: false,
+                    message: 'A purchase with this reference is already in progress',
+                    code: 'DUPLICATE_IN_PROGRESS',
+                });
+            }
             const providerResponse = (existing.metadata as Record<string, any> | null)?.providerResponse ?? existing;
             return sendSuccess(res, providerResponse, 'Data purchased successfully');
         }
@@ -160,15 +220,40 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
         console.log('PLAN CODE BEING SENT:', planCode);
         console.log('PURCHASE REQUEST:', { phoneNumber, planCode, verifiedAmount, network, requestId });
 
+        // 1. Create the transaction as PENDING before touching the provider
+        const pendingTx = await prisma.transaction.create({
+            data: {
+                userId,
+                walletId: wallet.id,
+                type: 'PURCHASE',
+                amount: verifiedAmount,
+                totalAmount: verifiedAmount,
+                reference: requestId,
+                description: `Data purchase - ${plan.name} - ${phoneNumber}`,
+                status: 'PENDING',
+                category: 'DATA',
+                metadata: { phoneNumber, network, planId, planCode },
+            },
+        });
+
+        // 2. Move to PROCESSING right before calling the provider
+        await prisma.transaction.update({ where: { id: pendingTx.id }, data: { status: 'PROCESSING' } });
+
+        // 3. Call Clubkonnect
         let result: any;
         try {
             result = await clubkonnect.purchaseData(phoneNumber, planCode, network, requestId);
             console.log('CLUBKONNECT DATA RESPONSE:', JSON.stringify(result));
         } catch (err: any) {
             console.error('CLUBKONNECT DATA ERROR:', err.message);
+            await prisma.transaction.update({
+                where: { id: pendingTx.id },
+                data: { status: 'FAILED', metadata: { phoneNumber, network, planId, planCode, error: err.message } },
+            });
             return res.status(400).json({ success: false, message: err.message });
         }
 
+        // 4. Provider succeeded — atomically deduct the wallet and mark SUCCESS
         try {
             await prisma.$transaction(async (tx) => {
                 const lockedWallet = await tx.wallet.findFirst({ where: { userId } });
@@ -186,25 +271,47 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
                     throw new Error('Wallet was modified concurrently. Please try again.');
                 }
 
-                await tx.transaction.create({
+                await tx.transaction.update({
+                    where: { id: pendingTx.id },
                     data: {
-                        userId,
-                        walletId: lockedWallet.id,
-                        type: 'PURCHASE',
-                        amount: verifiedAmount,
-                        totalAmount: verifiedAmount,
-                        balanceSnapshot: Number(updatedWallet.balance),
-                        reference: requestId,
-                        description: `Data purchase - ${plan.name} - ${phoneNumber}`,
                         status: 'SUCCESS',
-                        category: 'DATA',
+                        balanceSnapshot: Number(updatedWallet.balance),
                         metadata: { phoneNumber, network, planId, planCode, providerResponse: result },
                     },
                 });
             });
         } catch (err: any) {
-            const concurrent = err.message?.includes('concurrently');
-            return res.status(concurrent ? 409 : 400).json({ success: false, message: err.message });
+            // 🔴 Critical: the provider already delivered the data bundle but our DB update
+            // failed (insufficient balance on re-check, concurrent modification, etc).
+            // We cannot silently fail here — flag it for manual review instead.
+            await prisma.transaction.update({
+                where: { id: pendingTx.id },
+                data: {
+                    status: 'UNKNOWN',
+                    metadata: {
+                        phoneNumber,
+                        network,
+                        planId,
+                        planCode,
+                        providerResponse: result,
+                        error: err.message,
+                        requiresManualReview: true,
+                    },
+                },
+            });
+
+            await sendNotification(
+                userId,
+                'PURCHASE_FAILED',
+                'Purchase requires review',
+                'Your data purchase was processed by the provider but we encountered an error recording it. Our team will resolve this within 24 hours.',
+                { transactionId: pendingTx.id },
+            );
+
+            return res.status(500).json({
+                success: false,
+                message: 'Purchase processed but needs verification. Contact support.',
+            });
         }
 
         await checkBudgetAlert(userId, 'DATA');

@@ -105,6 +105,34 @@ router.get('/audit-logs', restrictTo(UserRole.ADMIN), async (req: Request, res: 
     } catch (err) { next(err); }
 });
 
+// ─── Transactions requiring manual review (ADMIN only) ───────────────────────
+router.get('/transactions/unknown', restrictTo(UserRole.ADMIN), async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { page = '1', limit = '50' } = req.query;
+        const take = Number(limit);
+        const skip = (Number(page) - 1) * take;
+
+        const where = { status: 'UNKNOWN' as const };
+
+        const [transactions, total] = await Promise.all([
+            prisma.transaction.findMany({
+                where,
+                orderBy: { createdAt: 'desc' },
+                take,
+                skip,
+            }),
+            prisma.transaction.count({ where }),
+        ]);
+
+        sendSuccess(res, transactions, 'Transactions requiring manual review', 200, {
+            page: Number(page),
+            limit: take,
+            total,
+            totalPages: Math.ceil(total / take),
+        });
+    } catch (err) { next(err); }
+});
+
 // ─── Wallet reconciliation (ADMIN only) ──────────────────────────────────────
 router.get('/wallets/:userId/reconcile', restrictTo(UserRole.ADMIN), async (req: Request, res: Response, next: NextFunction) => {
     try {

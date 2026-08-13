@@ -1,10 +1,11 @@
 import { prisma } from '../../database/prisma.js';
 import { withTransaction } from '../../database/transaction.js';
-import { NotFoundError, ConflictError } from '../../utils/errors.js';
+import { NotFoundError, ConflictError, BadRequestError } from '../../utils/errors.js';
 import { TransactionType, TransactionStatus } from '../../generated/prisma/enums.js';
 import { v4 as uuidv4 } from 'uuid';
 import * as paystackProvider from '../../providers/paystack.js';
 import { logger } from '../../utils/logger.js';
+import { MAX_WALLET_BALANCE } from './wallets.constants.js';
 
 export async function getWalletByUserId(userId: string) {
     const wallet = await prisma.wallet.findUnique({ where: { userId } });
@@ -58,7 +59,7 @@ export async function verifyAndCreditWallet(userId: string, reference: string) {
 
     const amountInNaira = verification.amount / 100;
 
-    return await withTransaction(async (tx) => {
+    const outcome = await withTransaction(async (tx) => {
         const lockedWallet = await tx.wallet.findUnique({ where: { userId } });
         if (!lockedWallet) throw new NotFoundError('Wallet not found');
 
@@ -66,7 +67,32 @@ export async function verifyAndCreditWallet(userId: string, reference: string) {
         const existing = await tx.transaction.findUnique({ where: { reference } });
         if (existing) {
             console.log('[verifyAndCreditWallet] reference already processed, returning current wallet');
-            return tx.wallet.findUnique({ where: { userId } });
+            return { status: 'ALREADY_PROCESSED' as const, wallet: lockedWallet };
+        }
+
+        const currentBalance = Number(lockedWallet.balance);
+        if (currentBalance + amountInNaira > MAX_WALLET_BALANCE) {
+            // Don't credit — record the attempt as UNKNOWN and flag it for manual review.
+            await tx.transaction.create({
+                data: {
+                    reference,
+                    userId,
+                    walletId: lockedWallet.id,
+                    amount: amountInNaira,
+                    totalAmount: amountInNaira,
+                    type: TransactionType.DEPOSIT,
+                    status: TransactionStatus.UNKNOWN,
+                    description: 'Wallet funded via Paystack - exceeds maximum wallet balance',
+                    balanceSnapshot: currentBalance,
+                    metadata: {
+                        channel: (verification.channel as string) ?? 'paystack',
+                        requiresManualReview: true,
+                        reason: 'MAX_WALLET_BALANCE_EXCEEDED',
+                        maxWalletBalance: MAX_WALLET_BALANCE,
+                    },
+                },
+            });
+            return { status: 'EXCEEDS_LIMIT' as const };
         }
 
         let updatedWallet;
@@ -96,6 +122,15 @@ export async function verifyAndCreditWallet(userId: string, reference: string) {
         });
 
         logger.info({ userId, amount: amountInNaira }, 'Wallet funded via Paystack');
-        return updatedWallet;
+        return { status: 'CREDITED' as const, wallet: updatedWallet };
     });
+
+    if (outcome.status === 'EXCEEDS_LIMIT') {
+        logger.error({ userId, reference, amountInNaira }, '[verifyAndCreditWallet] Deposit exceeds max wallet balance — held for manual review');
+        throw new BadRequestError(
+            `Maximum wallet balance is ₦${MAX_WALLET_BALANCE.toLocaleString()}. This deposit has been flagged for manual review.`,
+        );
+    }
+
+    return outcome.wallet;
 }

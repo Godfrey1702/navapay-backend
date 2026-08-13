@@ -9,6 +9,7 @@ import {
     requestIdMiddleware,
     requestLoggerMiddleware,
     rateLimiter,
+    securityHeaders,
 } from './middleware/index.js';
 import routes from './routes.js';
 import webhooksRouter from './modules/webhooks/webhooks.routes.js';
@@ -18,6 +19,7 @@ const app = express();
 
 // ─── Security ───────────────────────────────────────────────────────────────
 app.use(helmet());
+app.use(securityHeaders);
 app.use(
     cors({
         origin: (origin, callback) => {

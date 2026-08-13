@@ -4,6 +4,7 @@ import * as clubkonnect from '../../providers/clubkonnect.js';
 import { sendSuccess } from '../../utils/response.js';
 import { UnauthorizedError, BadRequestError } from '../../utils/errors.js';
 import { auditLog } from '../../lib/audit.js';
+import { MIN_TOPUP, MAX_WALLET_BALANCE } from './wallets.constants.js';
 
 export async function getMyWallet(req: Request, res: Response, next: NextFunction) {
     try {
@@ -24,6 +25,24 @@ export async function initializePayment(req: Request, res: Response, next: NextF
 
         if (typeof amount !== 'number' || amount <= 0) {
             throw new BadRequestError('A valid positive amount is required');
+        }
+
+        if (amount < MIN_TOPUP) {
+            return res.status(400).json({
+                success: false,
+                message: `Minimum top-up amount is ₦${MIN_TOPUP.toLocaleString()}`,
+            });
+        }
+
+        const wallet = await walletService.getWalletByUserId(req.user.id);
+        const currentBalance = Number(wallet.balance);
+
+        if (currentBalance + amount > MAX_WALLET_BALANCE) {
+            const allowedAmount = MAX_WALLET_BALANCE - currentBalance;
+            return res.status(400).json({
+                success: false,
+                message: `Maximum wallet balance is ₦${MAX_WALLET_BALANCE.toLocaleString()}. You can only add ₦${allowedAmount.toLocaleString()} more.`,
+            });
         }
 
         const result = await walletService.initializeWalletPayment(

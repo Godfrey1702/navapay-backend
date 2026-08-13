@@ -5,6 +5,8 @@ import { withTransaction } from '../../database/transaction.js';
 import { TransactionType, TransactionStatus } from '../../generated/prisma/enums.js';
 import { env } from '../../config/env.js';
 import { logger } from '../../utils/logger.js';
+import { MAX_WALLET_BALANCE } from '../wallets/wallets.constants.js';
+import { sendNotification } from '../../lib/notifications.js';
 
 export async function paystackWebhook(req: Request, res: Response) {
     // req.body is a raw Buffer here — see webhooks.routes.ts, which uses express.raw()
@@ -52,9 +54,34 @@ export async function paystackWebhook(req: Request, res: Response) {
             return;
         }
 
-        await withTransaction(async (tx) => {
+        const outcome = await withTransaction(async (tx) => {
             const lockedWallet = await tx.wallet.findUnique({ where: { id: wallet.id } });
             if (!lockedWallet) throw new Error('Wallet not found');
+
+            const currentBalance = Number(lockedWallet.balance);
+            if (currentBalance + amountNaira > MAX_WALLET_BALANCE) {
+                // Don't credit — record the attempt as UNKNOWN and flag it for manual review.
+                await tx.transaction.create({
+                    data: {
+                        userId,
+                        walletId: lockedWallet.id,
+                        type: TransactionType.DEPOSIT,
+                        amount: amountNaira,
+                        totalAmount: amountNaira,
+                        balanceSnapshot: currentBalance,
+                        reference,
+                        description: 'Wallet funding via Paystack - exceeds maximum wallet balance',
+                        status: TransactionStatus.UNKNOWN,
+                        metadata: {
+                            ...event.data,
+                            requiresManualReview: true,
+                            reason: 'MAX_WALLET_BALANCE_EXCEEDED',
+                            maxWalletBalance: MAX_WALLET_BALANCE,
+                        },
+                    },
+                });
+                return 'EXCEEDS_LIMIT' as const;
+            }
 
             let updatedWallet;
             try {
@@ -81,7 +108,21 @@ export async function paystackWebhook(req: Request, res: Response) {
                     metadata: event.data,
                 },
             });
+
+            return 'CREDITED' as const;
         });
+
+        if (outcome === 'EXCEEDS_LIMIT') {
+            logger.error({ userId, reference, amountNaira }, '[paystackWebhook] Deposit exceeds max wallet balance — held for manual review');
+            await sendNotification(
+                userId,
+                'SYSTEM_ALERT',
+                'Deposit held for review',
+                `Your deposit of ₦${amountNaira.toLocaleString()} exceeds the maximum wallet balance and is being held for manual review. Our team will resolve this within 24 hours.`,
+                { reference },
+            );
+            return;
+        }
 
         logger.info({ userId, amount: amountNaira }, '[paystackWebhook] Wallet credited');
     } catch (error) {

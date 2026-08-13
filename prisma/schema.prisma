@@ -213,9 +213,11 @@ enum TransactionType {
 
 enum TransactionStatus {
   PENDING
+  PROCESSING
   SUCCESS
   FAILED
-  CANCELLED
+  REVERSED
+  UNKNOWN
 }
 
 enum ServiceCategory {

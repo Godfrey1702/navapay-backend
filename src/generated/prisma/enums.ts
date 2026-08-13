@@ -38,9 +38,11 @@ export type TransactionType = (typeof TransactionType)[keyof typeof TransactionT
 
 export const TransactionStatus = {
   PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
   SUCCESS: 'SUCCESS',
   FAILED: 'FAILED',
-  CANCELLED: 'CANCELLED'
+  REVERSED: 'REVERSED',
+  UNKNOWN: 'UNKNOWN'
 } as const
 
 export type TransactionStatus = (typeof TransactionStatus)[keyof typeof TransactionStatus]
