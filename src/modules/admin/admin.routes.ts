@@ -5,6 +5,7 @@ import { sendSuccess } from '../../utils/response.js';
 import { UserRole } from '../../generated/prisma/enums.js';
 import { reconcileWallet } from '../../lib/ledger.js';
 import { auditLog } from '../../lib/audit.js';
+import * as adminController from './admin.controller.js';
 
 const router = Router();
 
@@ -17,6 +18,22 @@ router.get('/check-role', (req: Request, res: Response) => {
         data: { role: req.user!.role, isAdmin: req.user!.role === 'ADMIN' },
     });
 });
+
+// ─── Dashboard (ADMIN only) ───────────────────────────────────────────────────
+router.get('/dashboard-metrics', restrictTo(UserRole.ADMIN), adminController.getDashboardMetrics);
+router.get('/analytics', restrictTo(UserRole.ADMIN), adminController.getAnalytics);
+
+// ─── User management (ADMIN only) ────────────────────────────────────────────
+router.get('/users', restrictTo(UserRole.ADMIN), adminController.getUsers);
+router.get('/users/:userId', restrictTo(UserRole.ADMIN), adminController.getUserDetails);
+
+// ─── Transaction & wallet oversight (ADMIN only) ─────────────────────────────
+router.get('/transactions', restrictTo(UserRole.ADMIN), adminController.getTransactions);
+router.get('/wallets', restrictTo(UserRole.ADMIN), adminController.getWallets);
+router.post('/wallets/adjust', restrictTo(UserRole.ADMIN), adminController.adjustWallet);
+
+// ─── Scheduled top-ups (ADMIN only) ───────────────────────────────────────────
+router.get('/scheduled-topups', restrictTo(UserRole.ADMIN), adminController.getScheduledTopUps);
 
 // ─── Data plan management (ADMIN only) ───────────────────────────────────────
 router.use('/data-plans', restrictTo(UserRole.ADMIN));
