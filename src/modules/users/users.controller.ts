@@ -97,6 +97,25 @@ export async function updateMe(req: Request, res: Response, next: NextFunction) 
     }
 }
 
+export async function updatePhoneNumber(req: Request, res: Response, next: NextFunction) {
+    try {
+        if (!req.user) throw new UnauthorizedError('User not authenticated');
+
+        const phoneNumberId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        const { label } = req.body;
+
+        const data = await prisma.phoneNumber.update({
+            where: { id: phoneNumberId, userId: req.user!.id },
+            data: {
+                ...(label !== undefined && { label: label || null }),
+            },
+        });
+        res.json({ success: true, data });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export async function deletePhoneNumber(req: Request, res: Response, next: NextFunction) {
     try {
         if (!req.user) throw new UnauthorizedError('User not authenticated');

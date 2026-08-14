@@ -11,6 +11,7 @@ router.get('/me', userController.getMe);
 router.patch('/me', userController.updateMe);
 router.get('/phone-numbers', userController.getPhoneNumbers);
 router.post('/phone-numbers', userController.addPhoneNumber);
+router.patch('/phone-numbers/:id', userController.updatePhoneNumber);
 router.delete('/phone-numbers/:id', userController.deletePhoneNumber);
 
 export default router;
