@@ -1,5 +1,15 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
+import { Request } from 'express';
 import { env } from '../config/index.js';
+
+// express-rate-limit statically inspects a custom keyGenerator's source for the
+// literal substring "ipKeyGenerator" and warns (ERR_ERL_KEY_GEN_IPV6) if a raw
+// req.ip fallback is used without it — IPv6 clients can hold many addresses
+// within one subnet, so the raw address must be normalized to a subnet key.
+function userOrIpKey(req: Request): string {
+    if (req.user?.id) return req.user.id;
+    return ipKeyGenerator(req.ip ?? req.socket?.remoteAddress ?? 'unknown');
+}
 
 export const rateLimiter = rateLimit({
     windowMs: env.RATE_LIMIT_WINDOW_MS,
@@ -41,7 +51,7 @@ export const purchaseLimiter = rateLimit({
         message: 'Too many purchase attempts. Please wait a moment.',
         code: 'RATE_LIMIT_EXCEEDED',
     },
-    keyGenerator: (req) => req.user?.id || req.ip || 'unknown',
+    keyGenerator: userOrIpKey,
 });
 
 export const scheduleLimiter = rateLimit({
@@ -54,5 +64,5 @@ export const scheduleLimiter = rateLimit({
         message: 'Too many schedule creation attempts.',
         code: 'RATE_LIMIT_EXCEEDED',
     },
-    keyGenerator: (req) => req.user?.id || req.ip || 'unknown',
+    keyGenerator: userOrIpKey,
 });
