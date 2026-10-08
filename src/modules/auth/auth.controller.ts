@@ -33,12 +33,24 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     try {
         const result = await authService.login(req.body);
 
-        // Set refresh token in HTTP-only cookie
+        // Set refresh token in HTTP-only cookie (web clients read it this way)
         res.cookie('refreshToken', result.tokens.refreshToken, COOKIE_OPTIONS);
 
         await auditLog('LOGIN_SUCCESS', req, { email: result.user.email }, result.user.id);
 
-        sendSuccess(res, { user: sanitizeUser(result.user), accessToken: result.tokens.accessToken }, 'Login successful');
+        // React Native has no browser-style cookie jar, so a mobile client can't
+        // rely on the httpOnly cookie above. Mobile identifies itself with
+        // X-Client and gets the refresh token in the body instead, to persist
+        // and send back explicitly on /auth/refresh.
+        const responseData: Record<string, unknown> = {
+            user: sanitizeUser(result.user),
+            accessToken: result.tokens.accessToken,
+        };
+        if (req.get('X-Client') === 'mobile') {
+            responseData.refreshToken = result.tokens.refreshToken;
+        }
+
+        sendSuccess(res, responseData, 'Login successful');
     } catch (error) {
         await auditLog('LOGIN_FAILED', req, { email: req.body?.email });
         next(error);
