@@ -365,23 +365,6 @@ export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
 }
 
-export type EnumServiceCategoryFilter<$PrismaModel = never> = {
-  equals?: $Enums.ServiceCategory | Prisma.EnumServiceCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.ServiceCategory[] | Prisma.ListEnumServiceCategoryFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ServiceCategory[] | Prisma.ListEnumServiceCategoryFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumServiceCategoryFilter<$PrismaModel> | $Enums.ServiceCategory
-}
-
-export type EnumServiceCategoryWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.ServiceCategory | Prisma.EnumServiceCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.ServiceCategory[] | Prisma.ListEnumServiceCategoryFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ServiceCategory[] | Prisma.ListEnumServiceCategoryFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumServiceCategoryWithAggregatesFilter<$PrismaModel> | $Enums.ServiceCategory
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumServiceCategoryFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumServiceCategoryFilter<$PrismaModel>
-}
-
 export type EnumNotificationTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.NotificationType | Prisma.EnumNotificationTypeFieldRefInput<$PrismaModel>
   in?: $Enums.NotificationType[] | Prisma.ListEnumNotificationTypeFieldRefInput<$PrismaModel>
@@ -839,23 +822,6 @@ export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
-}
-
-export type NestedEnumServiceCategoryFilter<$PrismaModel = never> = {
-  equals?: $Enums.ServiceCategory | Prisma.EnumServiceCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.ServiceCategory[] | Prisma.ListEnumServiceCategoryFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ServiceCategory[] | Prisma.ListEnumServiceCategoryFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumServiceCategoryFilter<$PrismaModel> | $Enums.ServiceCategory
-}
-
-export type NestedEnumServiceCategoryWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.ServiceCategory | Prisma.EnumServiceCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.ServiceCategory[] | Prisma.ListEnumServiceCategoryFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ServiceCategory[] | Prisma.ListEnumServiceCategoryFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumServiceCategoryWithAggregatesFilter<$PrismaModel> | $Enums.ServiceCategory
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumServiceCategoryFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumServiceCategoryFilter<$PrismaModel>
 }
 
 export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {

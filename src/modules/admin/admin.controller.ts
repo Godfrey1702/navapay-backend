@@ -8,7 +8,9 @@ import { auditLog } from '../../lib/audit.js';
 
 export async function getDashboardMetrics(_req: Request, res: Response, next: NextFunction) {
     try {
-        const [totalUsers, totalWalletBalance, totalTransactions, activeSchedules, totalRevenue, recentTransactions] =
+        const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+        const [totalUsers, totalWalletBalance, totalTransactions, activeSchedules, totalRevenue, recentTransactions, recentTransactionsList] =
             await Promise.all([
                 prisma.user.count(),
                 prisma.wallet.aggregate({ _sum: { balance: true } }),
@@ -17,6 +19,9 @@ export async function getDashboardMetrics(_req: Request, res: Response, next: Ne
                 prisma.transaction.aggregate({
                     where: { type: 'PURCHASE', status: 'SUCCESS' },
                     _sum: { amount: true },
+                }),
+                prisma.transaction.count({
+                    where: { createdAt: { gte: last24Hours } },
                 }),
                 prisma.transaction.findMany({
                     take: 10,
@@ -32,6 +37,7 @@ export async function getDashboardMetrics(_req: Request, res: Response, next: Ne
             activeSchedules,
             totalRevenue: Number(totalRevenue._sum.amount ?? 0),
             recentTransactions,
+            recentTransactionsList,
         }, 'Dashboard metrics retrieved');
     } catch (err) { next(err); }
 }

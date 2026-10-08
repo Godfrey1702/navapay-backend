@@ -1186,7 +1186,6 @@ export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[key
 export const BudgetScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  category: 'category',
   amountLimit: 'amountLimit',
   month: 'month',
   year: 'year',

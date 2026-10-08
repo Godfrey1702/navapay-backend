@@ -168,7 +168,7 @@ export async function purchaseAirtime(req: Request, res: Response, next: NextFun
             });
         }
 
-        await checkBudgetAlert(userId, 'AIRTIME');
+        await checkBudgetAlert(userId);
         await auditLog('PURCHASE_AIRTIME', req, { phoneNumber, network, amount }, userId);
 
         sendSuccess(res, result, 'Airtime purchased successfully');
@@ -314,7 +314,7 @@ export async function purchaseData(req: Request, res: Response, next: NextFuncti
             });
         }
 
-        await checkBudgetAlert(userId, 'DATA');
+        await checkBudgetAlert(userId);
         await auditLog('PURCHASE_DATA', req, { phoneNumber, network, planId, amount: verifiedAmount }, userId);
 
         sendSuccess(res, result, 'Data purchased successfully');

@@ -14,6 +14,6 @@ router.use(protect);
 router.get('/', schedulesController.listSchedules);
 router.post('/', scheduleLimiter, requirePin, validate(createScheduleSchema), schedulesController.createSchedule);
 router.patch('/:id', validate(updateScheduleSchema), schedulesController.updateSchedule);
-router.delete('/:id', schedulesController.deleteSchedule);
+router.delete('/:id', requirePin, schedulesController.deleteSchedule);
 
 export default router;
