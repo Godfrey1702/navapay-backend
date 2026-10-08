@@ -27,7 +27,13 @@ const envSchema = z.object({
         .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
         .default('info'),
 
-    CORS_ORIGIN: z.string().default('*'),
+    // Comma-separated list of allowed origins, e.g.
+    // "https://app.navapay.com,https://admin.navapay.com". Required for
+    // credentials:true CORS to work — browsers reject "*" combined with
+    // credentialed requests, so there is no wildcard default.
+    CORS_ORIGIN: z
+        .string()
+        .default('http://localhost:8080,http://localhost:8081,http://localhost:8082,http://localhost:8083,http://localhost:5173'),
 
     // Payment provider settings
     PAYFLEX_API_KEY: z.string().optional().default(''),

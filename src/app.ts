@@ -20,23 +20,29 @@ const app = express();
 // ─── Security ───────────────────────────────────────────────────────────────
 app.use(helmet());
 app.use(securityHeaders);
+// Explicit allow-list, read from env so prod domains can be added without a
+// code change. credentials:true requires an explicit origin (never "*") —
+// the cors package reflects the actual request Origin back when the
+// callback passes `true`, it does not emit "*", so this is safe to combine
+// with credentials.
+const allowedOrigins = env.CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean);
+
 app.use(
     cors({
         origin: (origin, callback) => {
-            const allowedOrigins = [
-                "http://localhost:8080",
-                "http://localhost:8081",
-                "http://localhost:8082",
-                "http://localhost:8083",
-                "http://localhost:5173",
-            ];
-
             if (!origin) return callback(null, true);
 
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+
+            // Dev convenience only: lets a phone/browser on the same LAN hit a
+            // teammate's machine by IP instead of localhost. Never active in
+            // production — prod must be listed explicitly in CORS_ORIGIN.
             if (
-                allowedOrigins.includes(origin) ||
-                /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:(8080|8081|8082|8083|5173|3000)$/.test(origin) ||
-                /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}:(8080|8081|8082|8083|5173|3000)$/.test(origin)
+                env.NODE_ENV !== 'production' &&
+                (/^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:(8080|8081|8082|8083|5173|3000)$/.test(origin) ||
+                    /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}:(8080|8081|8082|8083|5173|3000)$/.test(origin))
             ) {
                 return callback(null, true);
             }
